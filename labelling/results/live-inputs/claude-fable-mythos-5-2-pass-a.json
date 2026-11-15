@@ -1,0 +1,71 @@
+{
+  "raw": "{\n  \"category\": \"model_release\",\n  \"source\": {\n    \"type\": \"press\",\n    \"affiliated\": false\n  },\n  \"claims\": [\n    {\n      \"claim\": \"Claude Fable 5.2 and Claude Mythos 5.2 show improvements in areas like coding, reasoning, and vision.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Claude Fable 5.2 coding reasoning vision improvements independent review\",\n        \"Anthropic Claude Fable 5.2 technical capabilities benchmark\"\n      ]\n    },\n    {\n      \"claim\": \"During prerelease testing they\u2019ve helped our engineers complete otherwise-infeasible software migrations, designed three working electronic devices from scratch, solved two open problems in the physics of black holes, made substantial progress on robotics evaluations, and formalized the proof of Fermat\u2019s Last Theorem in 30 hours.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Claude Fable 5.2 solve black hole physics problems Fermat's Last Theorem proof\",\n        \"Anthropic model formalizes Fermat's Last Theorem robotics achievements\"\n      ]\n    },\n    {\n      \"claim\": \"They generate outputs up to 30% faster than Claude Fable 5.1 and Claude Mythos 5.1, and they\u2019re available at a lower price: $8 per million input tokens and $40 per million output tokens.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Claude Fable 5.2 pricing per million tokens input output\",\n        \"Anthropic Fable 5.2 cost comparison Fable 5.1\"\n      ]\n    },\n    {\n      \"claim\": \"Fast mode is available for $16 per million input tokens and $80 per million output tokens.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Claude Fable 5.2 fast mode pricing per token\",\n        \"Anthropic Fable 5.2 fast mode cost input output tokens\"\n      ]\n    },\n    {\n      \"claim\": \"Fable 5.2 and Mythos 5.2 are a step above Opus 5.5 in almost all the capabilities we evaluated\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"Claude Fable 5.2 vs Opus 5.5 benchmark comparison\",\n        \"Anthropic Fable 5.2 outperforms Opus 5.5 independent evaluation\"\n      ]\n    },\n    {\n      \"claim\": \"On CyScenarioBench\u2020, each lab\u2019s scores are based on 76.3% Mythos 5.2\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"CyScenarioBench results Mythos 5.2 76.3% score verification\",\n        \"Anthropic Mythos 5.2 cybersecurity benchmark CyScenarioBench independent\"\n      ]\n    }\n  ],\n  \"prior_art_candidates\": [\n    \"Claude Opus 5.5\",\n    \"GPT-6 Astra\",\n    \"Gemini 4 Carbon\",\n    \"Claude Fable 5.1\",\n    \"Claude Mythos 5.1\"\n  ],\n  \"prior_art_queries\": [\n    \"latest AI model benchmarks 2026 coding reasoning vision\",\n    \"top large language models May 2026 comparison\"\n  ]\n}",
+  "parsed": {
+    "category": "model_release",
+    "source": {
+      "type": "press",
+      "affiliated": false
+    },
+    "claims": [
+      {
+        "claim": "Claude Fable 5.2 and Claude Mythos 5.2 show improvements in areas like coding, reasoning, and vision.",
+        "kind": "capability",
+        "queries": [
+          "Claude Fable 5.2 coding reasoning vision improvements independent review",
+          "Anthropic Claude Fable 5.2 technical capabilities benchmark"
+        ]
+      },
+      {
+        "claim": "During prerelease testing they\u2019ve helped our engineers complete otherwise-infeasible software migrations, designed three working electronic devices from scratch, solved two open problems in the physics of black holes, made substantial progress on robotics evaluations, and formalized the proof of Fermat\u2019s Last Theorem in 30 hours.",
+        "kind": "capability",
+        "queries": [
+          "Claude Fable 5.2 solve black hole physics problems Fermat's Last Theorem proof",
+          "Anthropic model formalizes Fermat's Last Theorem robotics achievements"
+        ]
+      },
+      {
+        "claim": "They generate outputs up to 30% faster than Claude Fable 5.1 and Claude Mythos 5.1, and they\u2019re available at a lower price: $8 per million input tokens and $40 per million output tokens.",
+        "kind": "pricing",
+        "queries": [
+          "Claude Fable 5.2 pricing per million tokens input output",
+          "Anthropic Fable 5.2 cost comparison Fable 5.1"
+        ]
+      },
+      {
+        "claim": "Fast mode is available for $16 per million input tokens and $80 per million output tokens.",
+        "kind": "pricing",
+        "queries": [
+          "Claude Fable 5.2 fast mode pricing per token",
+          "Anthropic Fable 5.2 fast mode cost input output tokens"
+        ]
+      },
+      {
+        "claim": "Fable 5.2 and Mythos 5.2 are a step above Opus 5.5 in almost all the capabilities we evaluated",
+        "kind": "benchmark",
+        "queries": [
+          "Claude Fable 5.2 vs Opus 5.5 benchmark comparison",
+          "Anthropic Fable 5.2 outperforms Opus 5.5 independent evaluation"
+        ]
+      },
+      {
+        "claim": "On CyScenarioBench\u2020, each lab\u2019s scores are based on 76.3% Mythos 5.2",
+        "kind": "benchmark",
+        "queries": [
+          "CyScenarioBench results Mythos 5.2 76.3% score verification",
+          "Anthropic Mythos 5.2 cybersecurity benchmark CyScenarioBench independent"
+        ]
+      }
+    ],
+    "prior_art_candidates": [
+      "Claude Opus 5.5",
+      "GPT-6 Astra",
+      "Gemini 4 Carbon",
+      "Claude Fable 5.1",
+      "Claude Mythos 5.1"
+    ],
+    "prior_art_queries": [
+      "latest AI model benchmarks 2026 coding reasoning vision",
+      "top large language models May 2026 comparison"
+    ]
+  }
+}

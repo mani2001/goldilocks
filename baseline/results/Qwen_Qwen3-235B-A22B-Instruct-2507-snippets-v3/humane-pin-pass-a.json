@@ -1,0 +1,66 @@
+{
+  "raw": "{\n  \"category\": \"model_release\",\n  \"source\": {\"type\": \"press\", \"affiliated\": false},\n  \"claims\": [\n    {\n      \"claim\": \"The Ai Pin is priced at $700.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\"Humane Ai Pin price $700 site:theverge.com\", \"Ai Pin cost 700 dollars\"]\n    },\n    {\n      \"claim\": \"There is a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\"Humane Ai Pin $24 monthly subscription T-Mobile\", \"Ai Pin service fee cost\"]\n    },\n    {\n      \"claim\": \"Orders for the Ai Pin are set to begin in the United States on November 16.\",\n      \"kind\": \"availability\",\n      \"queries\": [\"Ai Pin pre-order start date November 16 2023\", \"Humane Ai Pin release date US\"]\n    },\n    {\n      \"claim\": \"The Ai Pin has cellular connectivity and can be used to answer phone calls from trusted contacts.\",\n      \"kind\": \"capability\",\n      \"queries\": [\"Ai Pin cellular connectivity phone calls trusted contacts\", \"Humane Ai Pin make calls without phone\"]\n    },\n    {\n      \"claim\": \"A laser projector inside the Ai Pin can project information onto the user's hand.\",\n      \"kind\": \"capability\",\n      \"queries\": [\"Ai Pin laser projector hand display\", \"Humane Laser Ink Display how it works\"]\n    },\n    {\n      \"claim\": \"Holding up a food item to the Ai Pin will allow the device to provide nutritional information.\",\n      \"kind\": \"capability\",\n      \"queries\": [\"Ai Pin scan food nutritional information\", \"Humane Ai Pin food safety nutrition detection\"]\n    }\n  ],\n  \"prior_art_queries\": [\"wearable projector hand interface\", \"cellular-connected AI wearable device\", \"smart wearable nutrition scanner\", \"laser display wearable tech\"]\n}",
+  "parsed": {
+    "category": "model_release",
+    "source": {
+      "type": "press",
+      "affiliated": false
+    },
+    "claims": [
+      {
+        "claim": "The Ai Pin is priced at $700.",
+        "kind": "pricing",
+        "queries": [
+          "Humane Ai Pin price $700 site:theverge.com",
+          "Ai Pin cost 700 dollars"
+        ]
+      },
+      {
+        "claim": "There is a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.",
+        "kind": "pricing",
+        "queries": [
+          "Humane Ai Pin $24 monthly subscription T-Mobile",
+          "Ai Pin service fee cost"
+        ]
+      },
+      {
+        "claim": "Orders for the Ai Pin are set to begin in the United States on November 16.",
+        "kind": "availability",
+        "queries": [
+          "Ai Pin pre-order start date November 16 2023",
+          "Humane Ai Pin release date US"
+        ]
+      },
+      {
+        "claim": "The Ai Pin has cellular connectivity and can be used to answer phone calls from trusted contacts.",
+        "kind": "capability",
+        "queries": [
+          "Ai Pin cellular connectivity phone calls trusted contacts",
+          "Humane Ai Pin make calls without phone"
+        ]
+      },
+      {
+        "claim": "A laser projector inside the Ai Pin can project information onto the user's hand.",
+        "kind": "capability",
+        "queries": [
+          "Ai Pin laser projector hand display",
+          "Humane Laser Ink Display how it works"
+        ]
+      },
+      {
+        "claim": "Holding up a food item to the Ai Pin will allow the device to provide nutritional information.",
+        "kind": "capability",
+        "queries": [
+          "Ai Pin scan food nutritional information",
+          "Humane Ai Pin food safety nutrition detection"
+        ]
+      }
+    ],
+    "prior_art_queries": [
+      "wearable projector hand interface",
+      "cellular-connected AI wearable device",
+      "smart wearable nutrition scanner",
+      "laser display wearable tech"
+    ]
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "raw": "{\n  \"category\": \"tool\",\n  \"source\": {\n    \"type\": \"primary\",\n    \"affiliated\": true\n  },\n  \"evidence\": [\n    {\n      \"id\": 1,\n      \"url\": \"https://cognition.com/blog/introducing-devin\",\n      \"independent\": false\n    },\n    {\n      \"id\": 2,\n      \"url\": \"https://www.freethink.com/robots-ai/ai-software-engineer-devin\",\n      \"independent\": true\n    },\n    {\n      \"id\": 3,\n      \"url\": \"https://siliconangle.com/2024/03/12/cognition-launches-devin-generative-ai-powered-coding-engineer/\",\n      \"independent\": true\n    },\n    {\n      \"id\": 4,\n      \"url\": \"https://www.swebench.com\",\n      \"independent\": true\n    },\n    {\n      \"id\": 5,\n      \"url\": \"https://blog.kowatek.com/2024/03/12/cognition-emerges-from-stealth-to-launch-ai-engineer-devin/\",\n      \"independent\": true\n    }\n  ],\n  \"claims\": [\n    {\n      \"claim\": \"Devin correctly resolves 13.86%* of the issues end-to-end, far exceeding the previous state-of-the-art of 1.96%.\",\n      \"kind\": \"benchmark\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [1, 4]\n    },\n    {\n      \"claim\": \"Even when given the exact files to edit, the best previous models can only resolve 4.80% of issues.\",\n      \"kind\": \"benchmark\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [1, 4]\n    },\n    {\n      \"claim\": \"Devin was evaluated on a random 25% subset of the dataset.\",\n      \"kind\": \"benchmark\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [1, 4]\n    },\n    {\n      \"claim\": \"Devin can train and fine tune its own AI models. Devin sets up fine tuning for a large language model given only a link to a research repository on GitHub.\",\n      \"kind\": \"capability\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [1]\n    },\n    {\n      \"claim\": \"Devin is currently in early access as we ramp up capacity.\",\n      \"kind\": \"availability\",\n      \"status\": \"confirmed\",\n      \"evidence_ids\": [1, 2, 3, 5]\n    },\n    {\n      \"claim\": \"We are well funded, including a $21 million Series A led by Founders Fund.\",\n      \"kind\": \"funding\",\n      \"status\": \"confirmed\",\n      \"evidence_ids\": [1, 5]\n    }\n  ],\n  \"access\": {\n    \"status\": \"waitlist\",\n    \"via\": [\"app\"],\n    \"price_known\": false,\n    \"evidence_ids\": [1, 2, 3, 5]\n  },\n  \"delta\": [\n    \"autonomous task execution beyond code suggestion\",\n    \"sandboxed environment with shell, editor, and browser\",\n    \"end-to-end resolution of GitHub issues without file hints\"\n  ],\n  \"prior_art\": [\n    {\n      \"name\": \"SWE-bench state-of-the-art models\",\n      \"differs\": \"claims 13.86% end-to-end resolution vs 1.96% prior SOTA on SWE-bench\",\n      \"evidence_ids\": [1, 4]\n    },\n    {\n      \"name\": \"GitHub Copilot\",\n      \"differs\": \"positioned as a full AI worker rather than a copilot for code snippets\",\n      \"evidence_ids\": [5]\n    }\n  ],\n  \"substance\": \"new_capability\",\n  \"undisclosed\": [\n    \"pricing\",\n    \"eval_method\",\n    \"eval_independent\",\n    \"param_count\",\n    \"training_data\",\n    \"license\",\n    \"rate_limits\"\n  ],\n  \"category_record\": {\n    \"price\": null,\n    \"subscription\": null,\n    \"order/ship dates\": null,\n    \"specs_undisclosed\": [\n      \"param_count\",\n      \"training_data\",\n      \"license\",\n      \"rate_limits\"\n    ]\n  },\n  \"novelty\": 4,\n  \"slop\": 3,\n  \"confidence\": \"med\",\n  \"recheck_when\": \"independent SWE-bench replication or technical report release\",\n  \"tldr\": \"Cognition launched Devin, an autonomous AI software engineer in early access, claiming strong SWE-bench performance and full-task execution, but without independent verification or public technical details.\"\n}",
+  "parsed": {
+    "category": "tool",
+    "source": {
+      "type": "primary",
+      "affiliated": true
+    },
+    "evidence": [
+      {
+        "id": 1,
+        "url": "https://cognition.com/blog/introducing-devin",
+        "independent": false
+      },
+      {
+        "id": 2,
+        "url": "https://www.freethink.com/robots-ai/ai-software-engineer-devin",
+        "independent": true
+      },
+      {
+        "id": 3,
+        "url": "https://siliconangle.com/2024/03/12/cognition-launches-devin-generative-ai-powered-coding-engineer/",
+        "independent": true
+      },
+      {
+        "id": 4,
+        "url": "https://www.swebench.com",
+        "independent": true
+      },
+      {
+        "id": 5,
+        "url": "https://blog.kowatek.com/2024/03/12/cognition-emerges-from-stealth-to-launch-ai-engineer-devin/",
+        "independent": true
+      }
+    ],
+    "claims": [
+      {
+        "claim": "Devin correctly resolves 13.86%* of the issues end-to-end, far exceeding the previous state-of-the-art of 1.96%.",
+        "kind": "benchmark",
+        "status": "self_reported",
+        "evidence_ids": [
+          1,
+          4
+        ]
+      },
+      {
+        "claim": "Even when given the exact files to edit, the best previous models can only resolve 4.80% of issues.",
+        "kind": "benchmark",
+        "status": "self_reported",
+        "evidence_ids": [
+          1,
+          4
+        ]
+      },
+      {
+        "claim": "Devin was evaluated on a random 25% subset of the dataset.",
+        "kind": "benchmark",
+        "status": "self_reported",
+        "evidence_ids": [
+          1,
+          4
+        ]
+      },
+      {
+        "claim": "Devin can train and fine tune its own AI models. Devin sets up fine tuning for a large language model given only a link to a research repository on GitHub.",
+        "kind": "capability",
+        "status": "self_reported",
+        "evidence_ids": [
+          1
+        ]
+      },
+      {
+        "claim": "Devin is currently in early access as we ramp up capacity.",
+        "kind": "availability",
+        "status": "confirmed",
+        "evidence_ids": [
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "claim": "We are well funded, including a $21 million Series A led by Founders Fund.",
+        "kind": "funding",
+        "status": "confirmed",
+        "evidence_ids": [
+          1,
+          5
+        ]
+      }
+    ],
+    "access": {
+      "status": "waitlist",
+      "via": [
+        "app"
+      ],
+      "price_known": false,
+      "evidence_ids": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    "delta": [
+      "autonomous task execution beyond code suggestion",
+      "sandboxed environment with shell, editor, and browser",
+      "end-to-end resolution of GitHub issues without file hints"
+    ],
+    "prior_art": [
+      {
+        "name": "SWE-bench state-of-the-art models",
+        "differs": "claims 13.86% end-to-end resolution vs 1.96% prior SOTA on SWE-bench",
+        "evidence_ids": [
+          1,
+          4
+        ]
+      },
+      {
+        "name": "GitHub Copilot",
+        "differs": "positioned as a full AI worker rather than a copilot for code snippets",
+        "evidence_ids": [
+          5
+        ]
+      }
+    ],
+    "substance": "new_capability",
+    "undisclosed": [
+      "pricing",
+      "eval_method",
+      "eval_independent",
+      "param_count",
+      "training_data",
+      "license",
+      "rate_limits"
+    ],
+    "category_record": {
+      "price": null,
+      "subscription": null,
+      "order/ship dates": null,
+      "specs_undisclosed": [
+        "param_count",
+        "training_data",
+        "license",
+        "rate_limits"
+      ]
+    },
+    "novelty": 4,
+    "slop": 3,
+    "confidence": "med",
+    "recheck_when": "independent SWE-bench replication or technical report release",
+    "tldr": "Cognition launched Devin, an autonomous AI software engineer in early access, claiming strong SWE-bench performance and full-task execution, but without independent verification or public technical details."
+  }
+}

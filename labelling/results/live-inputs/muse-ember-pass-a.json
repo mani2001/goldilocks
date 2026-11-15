@@ -1,0 +1,71 @@
+{
+  "raw": "{\n  \"category\": \"model_release\",\n  \"source\": {\"type\": \"press\", \"affiliated\": false},\n  \"claims\": [\n    {\n      \"claim\": \"Ember was 'designed for complex reasoning execution and the work agents repeat all day: tool calls, coding subtasks, routing, extraction, and long document parsing.'\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Muse Ember model capabilities tool calls coding subtasks routing\",\n        \"Meta Muse Ember function calling document parsing features\"\n      ]\n    },\n    {\n      \"claim\": \"Ember is cheaper and smarter than competitors like Anthropic\u2019s Haiku and OpenAI\u2019s Luna according to Artificial Analysis\u2019s composite benchmark score\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"Artificial Analysis composite benchmark Meta Ember vs Haiku Luna\",\n        \"Muse Ember Anthropic Haiku OpenAI Luna benchmark comparison\"\n      ]\n    },\n    {\n      \"claim\": \"At 10 cents per million input tokens, Ember is significantly cheaper than frontier competitors like Haiku and Luna\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Muse Ember pricing per million input tokens\",\n        \"Meta Ember cost vs Anthropic Haiku OpenAI Luna token pricing\"\n      ]\n    },\n    {\n      \"claim\": \"Ember is cost-competitive with open source competitors like DeepSeek V4.1 Flash and GLM 5.3 Flash\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Muse Ember vs DeepSeek V4.1 Flash GLM 5.3 Flash pricing\",\n        \"Meta Ember cost comparison open source models DeepSeek GLM\"\n      ]\n    },\n    {\n      \"claim\": \"Ember can work from voice memos, meeting recordings, and video without a separate model\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Muse Ember multimodal audio video input support\",\n        \"Meta Ember process voice memos meeting recordings natively\"\n      ]\n    },\n    {\n      \"claim\": \"Ember is the fourth model released under Meta\u2019s Muse brand, following Spark, Glimmer, and Wonder\",\n      \"kind\": \"availability\",\n      \"queries\": [\n        \"Meta Muse model release timeline Spark Glimmer Wonder Ember\",\n        \"Muse Ember release order Meta AI models\"\n      ]\n    }\n  ],\n  \"prior_art_candidates\": [\n    \"Anthropic Haiku\",\n    \"OpenAI Luna\",\n    \"DeepSeek V4.1 Flash\",\n    \"GLM 5.3 Flash\",\n    \"Muse Wonder\"\n  ],\n  \"prior_art_queries\": [\n    \"lightweight AI models for agent tasks 2026\",\n    \"multimodal small language models agent execution comparison\"\n  ]\n}",
+  "parsed": {
+    "category": "model_release",
+    "source": {
+      "type": "press",
+      "affiliated": false
+    },
+    "claims": [
+      {
+        "claim": "Ember was 'designed for complex reasoning execution and the work agents repeat all day: tool calls, coding subtasks, routing, extraction, and long document parsing.'",
+        "kind": "capability",
+        "queries": [
+          "Muse Ember model capabilities tool calls coding subtasks routing",
+          "Meta Muse Ember function calling document parsing features"
+        ]
+      },
+      {
+        "claim": "Ember is cheaper and smarter than competitors like Anthropic\u2019s Haiku and OpenAI\u2019s Luna according to Artificial Analysis\u2019s composite benchmark score",
+        "kind": "benchmark",
+        "queries": [
+          "Artificial Analysis composite benchmark Meta Ember vs Haiku Luna",
+          "Muse Ember Anthropic Haiku OpenAI Luna benchmark comparison"
+        ]
+      },
+      {
+        "claim": "At 10 cents per million input tokens, Ember is significantly cheaper than frontier competitors like Haiku and Luna",
+        "kind": "pricing",
+        "queries": [
+          "Muse Ember pricing per million input tokens",
+          "Meta Ember cost vs Anthropic Haiku OpenAI Luna token pricing"
+        ]
+      },
+      {
+        "claim": "Ember is cost-competitive with open source competitors like DeepSeek V4.1 Flash and GLM 5.3 Flash",
+        "kind": "pricing",
+        "queries": [
+          "Muse Ember vs DeepSeek V4.1 Flash GLM 5.3 Flash pricing",
+          "Meta Ember cost comparison open source models DeepSeek GLM"
+        ]
+      },
+      {
+        "claim": "Ember can work from voice memos, meeting recordings, and video without a separate model",
+        "kind": "capability",
+        "queries": [
+          "Muse Ember multimodal audio video input support",
+          "Meta Ember process voice memos meeting recordings natively"
+        ]
+      },
+      {
+        "claim": "Ember is the fourth model released under Meta\u2019s Muse brand, following Spark, Glimmer, and Wonder",
+        "kind": "availability",
+        "queries": [
+          "Meta Muse model release timeline Spark Glimmer Wonder Ember",
+          "Muse Ember release order Meta AI models"
+        ]
+      }
+    ],
+    "prior_art_candidates": [
+      "Anthropic Haiku",
+      "OpenAI Luna",
+      "DeepSeek V4.1 Flash",
+      "GLM 5.3 Flash",
+      "Muse Wonder"
+    ],
+    "prior_art_queries": [
+      "lightweight AI models for agent tasks 2026",
+      "multimodal small language models agent execution comparison"
+    ]
+  }
+}

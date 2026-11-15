@@ -1,0 +1,85 @@
+[
+  {
+    "id": "deepseek-r1",
+    "story": "DeepSeek claims its 'reasoning' model beats OpenAI's o1 on certain benchmarks\nTechCrunch, originally published January 20, 2025 (story text as read for the smoke test)\n\nChinese AI lab DeepSeek has released an open version of DeepSeek-R1, its so-called reasoning model, that it claims performs as well as OpenAI's o1 on certain AI benchmarks.\n\nR1 is available from the AI dev platform Hugging Face under an MIT license, meaning it can be used commercially without restrictions. According to DeepSeek, R1 beats o1 on the benchmarks AIME, MATH-500, and SWE-bench Verified. AIME employs other models to evaluate a model's performance, while MATH-500 is a collection of word problems. SWE-bench Verified, meanwhile, focuses on programming tasks.\n\nBeing a reasoning model, R1 effectively fact-checks itself, which helps it to avoid some of the pitfalls that normally trip up models. Reasoning models take a little longer \u2014 usually seconds to minutes longer \u2014 to arrive at solutions compared to a typical nonreasoning model. The upside is that they tend to be more reliable in domains such as physics, science, and math.\n\nR1 contains 671 billion parameters, DeepSeek revealed in a technical report. Parameters roughly correspond to a model's problem-solving skills, and models with more parameters generally perform better than those with fewer parameters.\n\nIndeed, 671 billion parameters is massive, but DeepSeek also released \"distilled\" versions of R1 ranging in size from 1.5 billion parameters to 70 billion parameters. The smallest can run on a laptop. As for the full R1, it requires beefier hardware, but it is available through DeepSeek's API at prices 90%-95% cheaper than OpenAI's o1.\n\nThere is a downside to R1. Being a Chinese model, it's subject to benchmarking by China's internet regulator to ensure that its responses \"embody core socialist values.\" R1 won't answer questions about Tiananmen Square, for example, or Taiwan's autonomy.\n\nSo far, at least three Chinese labs \u2014 DeepSeek, Alibaba, and Kimi, which is owned by Chinese unicorn Moonshot AI \u2014 have produced models that they claim rival o1. (Of note, DeepSeek was the first \u2014 it announced a preview of R1 in late November.)\n",
+    "evidence": [
+      {
+        "id": 1,
+        "independent": true,
+        "url": "https://techcrunch.com/2025/01/27/deepseek-claims-its-reasoning-model-beats-openais-o1-on-certain-benchmarks/",
+        "snippet": "TechCrunch's launch coverage (Jan 20, 2025): DeepSeek released R1, an open version of its reasoning model, claiming it performs as well as OpenAI's o1 on AIME, MATH-500 and SWE-bench Verified. R1 is on Hugging Face under an MIT license. 671B parameters per DeepSeek's technical report. Distilled versions 1.5B-70B released the same day; the smallest can run on a laptop. Full R1 available via DeepSeek's API at prices 90-95% cheaper than o1. Notes R1 is subject to Chinese content regulation. Notes DeepSeek was first among Chinese labs (Alibaba, Kimi) with a reasoning-model preview in late November."
+      },
+      {
+        "id": 2,
+        "independent": false,
+        "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+        "check": "registry",
+        "snippet": "Hugging Face model card (registry check: artefact exists, weights downloadable). License: MIT. 671B total parameters, 37B activated (MoE). Six distilled checkpoints listed, 1.5B to 70B. Model card and linked report give DeepSeek's own benchmark numbers: AIME 2024 79.8, MATH-500 97.3, SWE-bench Verified 49.2, GPQA Diamond 71.5, MMLU 90.8. Context length 128K."
+      },
+      {
+        "id": 3,
+        "independent": false,
+        "url": "https://arxiv.org/abs/2501.12948",
+        "snippet": "DeepSeek's technical report (arXiv 2501.12948, DeepSeek's own paper). Benchmark table: R1 vs o1 \u2014 AIME 79.8 vs 79.2, MATH-500 97.3 vs 96.4, SWE-bench Verified 49.2 vs 48.9. Describes R1-Zero, reasoning behaviour emerging from pure RL with no supervised fine-tuning first. Comparison table includes Alibaba's QwQ-32B-Preview at AIME 44.0. All numbers are DeepSeek's own; no independent replication in this document."
+      },
+      {
+        "id": 4,
+        "independent": true,
+        "url": "https://techcrunch.com/2025/01/28/hugging-face-researchers-are-trying-to-build-a-more-open-version-of-deepseeks-ai-reasoning-model/",
+        "snippet": "TechCrunch (Jan 28, 2025): Hugging Face researchers are attempting to build a more open reproduction of R1. Independent confirmation that R1 exists, is downloadable, and is being replicated by third parties. No independent benchmark replication results yet at this date."
+      },
+      {
+        "id": 5,
+        "independent": true,
+        "url": "https://deepseekai.guide/comparisons/deepseek-r1-vs-openai-o1/",
+        "snippet": "Independent side-by-side comparison of R1 vs o1: lists API pricing \u2014 R1 $0.55 input / $2.19 output per 1M tokens vs o1 $15 / $60 \u2014 confirming the 90-95% cheaper claim with exact figures. Confirms R1 is open-weight (MIT) while o1 is closed and API-only."
+      }
+    ],
+    "hand_verdict": {
+      "novelty": 5,
+      "slop": 2,
+      "confidence": "med"
+    }
+  },
+  {
+    "id": "humane-pin",
+    "story": "Humane Debuts $700 AI Pin With 'Laser Ink Display'\nMacRumors, November 9, 2023 (story text as read for the smoke test)\n\nHumane, a tech startup run by former Apple designer Imran Chaudhri and former Apple software manager Bethany Bongiorno, today officially unveiled its first product, the Ai Pin. Priced at $700, the Ai Pin is a standalone device that Humane says was built from the ground up for artificial intelligence.\n\nThe Ai Pin attaches to a clothing item using a magnetic system that involves a detachable battery, which is also how the device is powered. The idea is to swap the battery out for a new battery when necessary, resulting in what Humane calls a \"perpetual power system.\" It is not clear how long each battery lasts.\n\nDesign wise, the Ai Pin looks something like an Apple Watch with a rounded rectangular shape. It is made from aluminum, comes in three colors, and has a Gorilla Glass touchpad. There's also an \"optical sensing capsule,\" a 3D depth sensor, and a Qualcomm Snapdragon chip to power it.\n\nA laser projector inside the Ai Pin can project information onto the user's hand, and it is necessary because there is no standard display on the device itself. Humane calls the laser projector system a \"Laser Ink Display.\" Interacting with the Laser Ink Display can be done by rolling and tilting the hand, and selecting an item is done with a finger tap similar to the tap used for Apple's own Double Tap feature on Apple Watch.\n\nTouching the Ai Pin and speaking activates the \"Ai Mic\" that can answer questions and help users find information, including details they have previously relayed to the device, such as reminders. It plays music through a \"Personic Speaker\" that creates a bubble of sound around the wearer, plus there is an Interpreter feature. Humane says that the Ai Pin is \"fluent in many languages\" and can translate spoken words in real-time. There are no apps, with all actions and functions accessed through the AI.\n\nA built-in 13-megapixel ultra wide-angle camera can be used to capture photographs and videos, either using a two-finger double tap or a voice command. Photos can be viewed using the \"Center\" website on any web browser. Center also houses notes that have been taken, music listened to, reminders, and more.\n\nUsers can tell the Ai Pin about their activity and nutrition goals to keep tabs on their progress and better understand the energy they take in and put out. Holding up a food item to the Ai Pin will allow the device to provide nutritional information and can let a user know if it's \"safe\" to eat based on their health goals.\n\nThe device has cellular connectivity and can be used to answer phone calls from trusted contacts that are designated by the wearer. Humane says the Ai Pin is able to intelligently determine what takes priority if an untrusted contact calls or sends a message, allowing interactions such as a food delivery person arriving with an order. Calls and text messages can be sent using the Ai Pin, with messages composed through voice requests.\n\nThe Ai Pin cannot be activated without direct user interaction, so it is not listening or recording by default. When the camera, phone, or microphone are activated, there is a colored \"Trust Light\" that lets other people around the user know when the Ai Pin is in use.\n\nOrders for the Ai Pin are set to begin in the United States on November 16. Ai Pin is priced at $700, and there is also a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.\n",
+    "evidence": [
+      {
+        "id": 1,
+        "independent": true,
+        "url": "https://www.macrumors.com/2023/11/09/humane-ai-pin/",
+        "snippet": "MacRumors launch coverage (Nov 9, 2023): Humane unveiled the Ai Pin, $700, with a $24/month subscription on the Humane network (T-Mobile). Orders begin in the US on November 16. Laser projector ('Laser Ink Display') projects onto the user's hand; 13MP ultra-wide camera; Snapdragon chip; magnetic battery-swap system ('perpetual power'). No battery life per charge is given anywhere in the coverage. All capability claims are Humane's own, relayed by the outlet; no independent hands-on."
+      },
+      {
+        "id": 2,
+        "independent": false,
+        "url": "https://www.cmswire.com/the-wire/humane-launches-ai-pin-marking-a-new-beginning-for-personal-ai-devices/",
+        "snippet": "Humane's own launch press release: calls the Ai Pin 'the first wearable device and software platform built to harness the full power of AI'. Claims Laser Ink Display, Ai Mic with Cosmos/Ai Bus routing every request through AI with no apps, and a perpetual power system with hot-swappable battery boosters. Complete system $699, orders Nov 16, ships early 2024. Every claim in this source is the company's own marketing."
+      },
+      {
+        "id": 3,
+        "independent": true,
+        "url": "https://www.digitec.ch/en/page/new-hype-gadget-with-ai-what-it-can-do-and-what-it-cant-30436",
+        "snippet": "Digitec (independent Swiss retailer/outlet) coverage: describes the Ai Pin's announced features and what it can and cannot do, in a sceptical register \u2014 key claims (laser display usability, AI reliability, battery life) are untested by anyone outside Humane. No independent hands-on or review exists at this date."
+      },
+      {
+        "id": 4,
+        "independent": true,
+        "url": "https://tech.co/news/humane-ai-pin-price-specs-launch",
+        "snippet": "Tech.co (independent) launch coverage: confirms the $699 price and $24/month subscription from an independent outlet, plus the Nov 16 order date and early-2024 shipping window. Specs relayed from Humane's announcement; no independent testing."
+      },
+      {
+        "id": 5,
+        "independent": true,
+        "url": "https://www.essilorluxottica.com/en/newsroom/press-releases/ray-ban-and-meta-launch-the-next-generation-of-smart-glasses/",
+        "snippet": "EssilorLuxottica / Meta press release: Ray-Ban Meta smart glasses \u2014 announced Sep 27, 2023, in stores Oct 17, 2023, starting at $299. AI wearable with camera, Meta AI voice assistant and open-ear audio, phone-paired. On sale to reviewers six weeks before the Ai Pin's announcement."
+      }
+    ],
+    "hand_verdict": {
+      "novelty": 3,
+      "slop": 4,
+      "confidence": "med"
+    }
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "rabbit-r1",
+    "story": "CES: Rabbit Launches AI-Powered Pocket Controller for Apps\nETCentric, January 2024 (CES 2024 week; story text as read for the batch-1 run)\n\nSanta Monica-based AI startup Rabbit Inc. is offering a virtual assistant in the form of a pocket device that the company says can improve upon mobile phones by learning to use your apps and running them for you. Heavily publicized at CES 2024 in Las Vegas this week, the initial run of the company's r-1 units had as of Tuesday sold out at $199 each. The retro-looking device with a 2.88-inch touchscreen is continuing to take preorders; shipments are scheduled to begin in late March. The company says its proprietary Rabbit OS is the first operating system built on a Large Action Model (LAM) foundation. LAMs are LLMs trained on datasets of actions and consequences.\n\nThe r1 \"works as a sort of universal controller for apps,\" The Verge reports. Rabbit developed r1 to offer users \"an app-free online experience\" in which the device \u2014 which features a push-to-talk button, 360-degree rotational eye and analog scroll wheel \u2014 \"navigates all of your apps \u2026 so you don't have to.\"\n\nThe LAM \"can infer and model human actions on computer interfaces by learning users' intention and behavior when they use specific apps, and then mimic and perform them both reliably and quickly,\" Rabbit explained in an introductory announcement.\n\n\"The company is hoping you'll carry a second device around to save yourself the trouble of opening your phone \u2014 and has gone to extraordinary technical lengths to make it work,\" TechCrunch writes, explaining that \"instead of pulling out your phone, unlocking it, finding the app, opening it and working your way through the UI (so laborious!), you pull out the r1 instead and give it a command in natural language: 'Call an Uber XL to take us to the Museum of Modern Art. Give me a list of five cheap restaurants within a 10-minute walk of there.'\"\n\n\"You don't interact with the r1 by opening apps; instead, you press a physical push-to-talk button to ask a question or play a song on Spotify as if you were speaking into a walkie-talkie,\" reports CNET, adding that Rabbit CEO and founder Jesse Lyu \"likens it to handing your phone to a friend to order takeout rather than doing so yourself.\"\n\n\"The phone is an entertainment device, but if you're trying to get something done it's not the highest efficiency machine,\" Lyu says in TechCrunch, pointing out that \"to arrange dinner with a colleague we needed four-five different apps to work together.\" Large language models, he says, offer a universal means for devices to understand requests.\n\nThe Verge notes those who preordered before January 9 can expect delivery in March, while those ordering after that official launch date should receive the item \"between April and May 2024.\"\n",
+    "evidence": [
+      {
+        "id": 1,
+        "independent": true,
+        "url": "https://www.etcentric.org/ces-rabbit-launches-ai-powered-pocket-controller-for-apps/",
+        "snippet": "ETCentric CES 2024 coverage: Rabbit's r1 is a $199 pocket device with a 2.88-inch touchscreen; the first run sold out, shipments scheduled to begin in late March. Rabbit OS is described as the first OS built on a Large Action Model (LAM) \u2014 LLMs trained on datasets of actions and consequences. The Verge calls it a 'universal controller for apps'; TechCrunch and CNET quote the pitch (natural-language commands to call an Uber, play Spotify) and note the device is a second gadget to carry, not a phone replacement. All capability claims are Rabbit's own, relayed by the outlets; no independent hands-on with a working device."
+      },
+      {
+        "id": 2,
+        "independent": true,
+        "url": "https://mobilesyrup.com/2024/01/11/rabbit-r1-sold-10000-24-hours/",
+        "snippet": "MobileSyrup (Jan 11, 2024): Rabbit says it sold 10,000 R1 units in 24 hours after the CES debut \u2014 the company says it internally hoped to sell 500 on launch day. First batch sold out; pre-orders continue, with first-round orders shipping in March and second-round delivery April-May 2024. Describes the LAM as an AI model trained to use apps, allowing the Rabbit to do things on behalf of users. The 10,000 figure is Rabbit's own claim via its Twitter account."
+      },
+      {
+        "id": 3,
+        "independent": true,
+        "url": "https://Www.itechpost.com/articles/120516/20240109/ces-2024-rabbit-introduces-handheld-virtual-assistant-looks-walkie-talkie.htm",
+        "snippet": "iTechPost day-0 coverage (Jan 9, 2024): Rabbit launched the R1 at CES 2024, a handheld virtual assistant running a natural-language OS, $199, about the size of a stack of Post-It notes with a 2.88-inch touchscreen. Works via a push-to-talk button for voice commands. CEO Jesse Lyu says the idea came from frustration with cluttered smartphone apps. R1 is not meant to replace smartphones but to be a menial task handler."
+      },
+      {
+        "id": 4,
+        "independent": true,
+        "url": "https://decrypt.co/212540/r1-rabbit-tech-pocket-ai-companion-ces",
+        "snippet": "Decrypt (Jan 11, 2024): the R1 sold out its first batch of 10,000 units within 24 hours amid online debate and derision. Specs from Rabbit's press release: 2.3 GHz MediaTek Helio P35 processor, 4GB memory, 128GB storage, USB-C, empty SIM slot. Notes scepticism about the business model: $199 with no subscription while promising unlimited access to compute-heavy AI drew questions about viability. Names Humane's AI Pin ($699 + $24/month) as the other entrant in the AI-gadget space."
+      },
+      {
+        "id": 5,
+        "independent": true,
+        "url": "https://www.macrumors.com/2023/11/09/humane-ai-pin/",
+        "snippet": "MacRumors (Nov 9, 2023): Humane's Ai Pin \u2014 the closest prior art. A $700 screenless AI wearable with a laser projector, $24/month subscription, orders from Nov 16, shipping early 2024. Announced two months before the R1 with a similar 'post-smartphone AI device' pitch and no independent hands-on at announcement."
+      }
+    ],
+    "hand_verdict": {
+      "novelty": 3,
+      "slop": 4,
+      "confidence": "med"
+    },
+    "seed_note": "Seed expected read: novelty 3, slop 5 (hindsight). Day-0 slop 4: real device shown, price and ship date real, 10k pre-orders \u2014 but every capability claim self-reported. Hindsight rescore slop 5 (shipped to scathing reviews, LAM largely scripted/limited)."
+  },
+  {
+    "id": "devin",
+    "story": "Introducing Devin, the first AI software engineer\nCognition blog, March 12, 2024 (story text as read for the batch-1 run)\n\nDevin is a tireless, skilled teammate, equally ready to build alongside you or independently complete tasks for you to review.\n\nWith Devin, engineers can focus on more interesting problems and engineering teams can strive for more ambitious goals.\n\nDevin's Capabilities\n\nWith our advances in long-term reasoning and planning, Devin can plan and execute complex engineering tasks requiring thousands of decisions. Devin can recall relevant context at every step, learn over time, and fix mistakes.\n\nWe've also equipped Devin with common developer tools including the shell, code editor, and browser within a sandboxed compute environment \u2014 everything a human would need to do their work.\n\nFinally, we've given Devin the ability to actively collaborate with the user. Devin reports on its progress in real time, accepts feedback, and works together with you through design choices as needed. Here's a sample of what Devin can do:\n\nDevin can learn how to use unfamiliar technologies. After reading a blog post, Devin runs ControlNet on Modal to produce images with concealed messages for Sara.\n\nDevin can build and deploy apps end to end. Devin makes an interactive website which simulates the Game of Life! It incrementally adds features requested by the user and then deploys the app to Netlify.\n\nDevin can autonomously find and fix bugs in codebases. Devin helps Andrew maintain and debug his open source competitive programming book.\n\nDevin can train and fine tune its own AI models. Devin sets up fine tuning for a large language model given only a link to a research repository on GitHub.\n\nDevin can address bugs and feature requests in open source repositories. Given just a link to a GitHub issue, Devin does all the setup and context gathering that is needed.\n\nDevin can contribute to mature production repositories. This example is part of the SWE-bench benchmark. Devin solves a bug with logarithm calculations in the sympy Python algebra system. Devin sets up the code environment, reproduces the bug, and codes and tests the fix on its own.\n\nWe even tried giving Devin real jobs on Upwork and it could do those too! Here, Devin writes and debugs code to run a computer vision model. Devin samples the resulting data and compiles a report at the end.\n\nDevin's Performance\n\nWe evaluated Devin on SWE-bench, a challenging benchmark that asks agents to resolve real-world GitHub issues found in open source projects like Django and scikit-learn.\n\nDevin correctly resolves 13.86%* of the issues end-to-end, far exceeding the previous state-of-the-art of 1.96%. Even when given the exact files to edit, the best previous models can only resolve 4.80% of issues.\n\nDevin was evaluated on a random 25% subset of the dataset. Devin was unassisted, whereas all other models were assisted (meaning the model was told exactly which files need to be edited).\n\nWe plan to publish a more detailed technical report soon \u2014 stay tuned for more details.\n\nAbout Cognition\n\nWe are an applied AI lab focused on reasoning. We're building AI teammates with capabilities far beyond today's existing AI tools. By solving reasoning, we can unlock new possibilities in a wide range of disciplines \u2014 code is just the beginning. We want to help people around the world turn their ideas into reality.\n\nWe are well funded, including a $21 million Series A led by Founders Fund.\n\nHire Devin\n\nDevin is currently in early access as we ramp up capacity. To start using Devin for engineering work, join the waitlist or get in touch at info@cognition.ai.\n",
+    "evidence": [
+      {
+        "id": 1,
+        "independent": false,
+        "url": "https://cognition.com/blog/introducing-devin",
+        "snippet": "Cognition's own launch post (Mar 12, 2024): Devin is 'the first AI software engineer' \u2014 plans and executes complex engineering tasks, with shell, code editor and browser in a sandboxed environment. Demo videos show it building/deploying apps, fixing bugs, fine-tuning models, and completing a real Upwork job. SWE-bench: resolves 13.86% of issues end-to-end vs previous SOTA 1.96% (4.80% even when given the exact files). Footnote: evaluated on a random 25% subset of the dataset, unassisted vs assisted baselines. Technical report promised 'soon'. Early access, waitlist. $21M Series A led by Founders Fund. Every claim in this source is the company's own."
+      },
+      {
+        "id": 2,
+        "independent": true,
+        "url": "https://www.freethink.com/robots-ai/ai-software-engineer-devin",
+        "snippet": "Freethink (Mar 14, 2024): Cognition emerged from stealth Mar 12 with a detailed blog post and demo videos showing Devin building/deploying apps, debugging code, and training new AIs. Notes Cognition has started making Devin available to select users upon request. Notes how Cognition 'managed to jump ahead of the pack isn't clear \u2014 it's yet to elaborate on how its AI software engineer works', with a more detailed technical report promised soon. All performance claims relayed from Cognition; no independent testing."
+      },
+      {
+        "id": 3,
+        "independent": true,
+        "url": "https://siliconangle.com/2024/03/12/cognition-launches-devin-generative-ai-powered-coding-engineer/",
+        "snippet": "SiliconANGLE (Mar 12, 2024): Devin takes the GitHub Copilot premise much further \u2014 it can carry out entire jobs on its own rather than assist a human coder. Notes Devin is 'only available in private preview and only a few select journalists such as Bloomberg's Ashlee Vance have had access to the tool'. No independent verification of the benchmark or demo claims at launch."
+      },
+      {
+        "id": 4,
+        "independent": true,
+        "url": "https://www.swebench.com",
+        "snippet": "SWE-bench is a public benchmark of real-world GitHub issues from open-source Python projects (Django, scikit-learn, sympy and others). The 13.86% figure is Cognition's own evaluation on a random 25% subset of the dataset \u2014 it is not an independent leaderboard result, and no third party had reproduced it at launch."
+      },
+      {
+        "id": 5,
+        "independent": true,
+        "url": "https://blog.kowatek.com/2024/03/12/cognition-emerges-from-stealth-to-launch-ai-engineer-devin/",
+        "snippet": "Kowatek (Mar 12, 2024): Cognition, backed by Founders Fund, Elad Gil and Tony Xu, announced Devin as a fully autonomous AI software engineer. Frames the shift as giving engineers 'a full-fledged AI worker' rather than 'a copilot that could merely write barebones code or suggest snippets' \u2014 naming GitHub Copilot as the incumbent model. Notes Devin 'remains non-public, with the company opening access only to a select few customers'."
+      }
+    ],
+    "hand_verdict": {
+      "novelty": 4,
+      "slop": 4,
+      "confidence": "med"
+    },
+    "seed_note": "Seed expected read: novelty 4, slop 4. Real product later, but launch demo/benchmark framing heavily disputed."
+  }
+]

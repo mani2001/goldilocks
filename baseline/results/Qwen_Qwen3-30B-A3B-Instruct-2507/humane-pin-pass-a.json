@@ -1,0 +1,66 @@
+{
+  "raw": "{\n  \"category\": \"tool\",\n  \"source\": {\n    \"type\": \"press\",\n    \"affiliated\": false\n  },\n  \"claims\": [\n    {\n      \"claim\": \"The Ai Pin is priced at $700.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Humane Ai Pin price $700 official announcement MacRumors\",\n        \"Humane Ai Pin retail price $700 November 2023\"\n      ]\n    },\n    {\n      \"claim\": \"There is a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.\",\n      \"kind\": \"pricing\",\n      \"queries\": [\n        \"Humane Ai Pin $24 monthly fee T-Mobile network\",\n        \"Humane network subscription cost $24 per month\"\n      ]\n    },\n    {\n      \"claim\": \"Orders for the Ai Pin are set to begin in the United States on November 16.\",\n      \"kind\": \"availability\",\n      \"queries\": [\n        \"Humane Ai Pin preorders start date November 16 2023\",\n        \"Humane Ai Pin US availability November 16 2023\"\n      ]\n    },\n    {\n      \"claim\": \"The Ai Pin has a laser projector that can project information onto the user's hand.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Humane Ai Pin laser projector projects onto hand demo\",\n        \"Laser Ink Display Humane Ai Pin how it works\"\n      ]\n    },\n    {\n      \"claim\": \"The Ai Pin has a 13-megapixel ultra wide-angle camera that can capture photos and videos using a two-finger double tap or voice command.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Humane Ai Pin 13MP camera two-finger double tap photo capture\",\n        \"Humane Ai Pin voice command photo capture feature\"\n      ]\n    },\n    {\n      \"claim\": \"The Ai Pin can provide nutritional information and determine if a food item is 'safe' to eat based on user health goals.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Humane Ai Pin food safety analysis based on health goals\",\n        \"Ai Pin nutritional info from food scan health goals\"\n      ]\n    }\n  ],\n  \"prior_art_queries\": [\n    \"wearable device with laser projection display hand\",\n    \"AI wearable with food nutritional analysis via camera\",\n    \"wearable with voice-activated camera and no screen\",\n    \"T-Mobile powered AI wearable subscription service\"\n  ]\n}",
+  "parsed": {
+    "category": "tool",
+    "source": {
+      "type": "press",
+      "affiliated": false
+    },
+    "claims": [
+      {
+        "claim": "The Ai Pin is priced at $700.",
+        "kind": "pricing",
+        "queries": [
+          "Humane Ai Pin price $700 official announcement MacRumors",
+          "Humane Ai Pin retail price $700 November 2023"
+        ]
+      },
+      {
+        "claim": "There is a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.",
+        "kind": "pricing",
+        "queries": [
+          "Humane Ai Pin $24 monthly fee T-Mobile network",
+          "Humane network subscription cost $24 per month"
+        ]
+      },
+      {
+        "claim": "Orders for the Ai Pin are set to begin in the United States on November 16.",
+        "kind": "availability",
+        "queries": [
+          "Humane Ai Pin preorders start date November 16 2023",
+          "Humane Ai Pin US availability November 16 2023"
+        ]
+      },
+      {
+        "claim": "The Ai Pin has a laser projector that can project information onto the user's hand.",
+        "kind": "capability",
+        "queries": [
+          "Humane Ai Pin laser projector projects onto hand demo",
+          "Laser Ink Display Humane Ai Pin how it works"
+        ]
+      },
+      {
+        "claim": "The Ai Pin has a 13-megapixel ultra wide-angle camera that can capture photos and videos using a two-finger double tap or voice command.",
+        "kind": "capability",
+        "queries": [
+          "Humane Ai Pin 13MP camera two-finger double tap photo capture",
+          "Humane Ai Pin voice command photo capture feature"
+        ]
+      },
+      {
+        "claim": "The Ai Pin can provide nutritional information and determine if a food item is 'safe' to eat based on user health goals.",
+        "kind": "capability",
+        "queries": [
+          "Humane Ai Pin food safety analysis based on health goals",
+          "Ai Pin nutritional info from food scan health goals"
+        ]
+      }
+    ],
+    "prior_art_queries": [
+      "wearable device with laser projection display hand",
+      "AI wearable with food nutritional analysis via camera",
+      "wearable with voice-activated camera and no screen",
+      "T-Mobile powered AI wearable subscription service"
+    ]
+  }
+}

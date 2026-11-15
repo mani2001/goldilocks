@@ -1,0 +1,69 @@
+{
+  "raw": "{\n  \"category\": \"tool\",\n  \"source\": {\"type\": \"primary\", \"affiliated\": true},\n  \"claims\": [\n    {\n      \"claim\": \"Devin correctly resolves 13.86%* of the issues end-to-end, far exceeding the previous state-of-the-art of 1.96%.\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"SWE-bench benchmark results 2024 AI code agent\",\n        \"Devin AI vs state-of-the-art SWE-bench performance independent evaluation\"\n      ]\n    },\n    {\n      \"claim\": \"Even when given the exact files to edit, the best previous models can only resolve 4.80% of issues.\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"SWE-bench performance with file hints AI models\",\n        \"AI code agent accuracy with ground truth files SWE-bench\"\n      ]\n    },\n    {\n      \"claim\": \"Devin was evaluated on a random 25% subset of the dataset.\",\n      \"kind\": \"benchmark\",\n      \"queries\": [\n        \"SWE-bench evaluation protocol subset size\",\n        \"Devin AI SWE-bench evaluation methodology independent source\"\n      ]\n    },\n    {\n      \"claim\": \"Devin can train and fine tune its own AI models. Devin sets up fine tuning for a large language model given only a link to a research repository on GitHub.\",\n      \"kind\": \"capability\",\n      \"queries\": [\n        \"Devin AI fine-tune large language models autonomously\",\n        \"AI agent training and fine-tuning LLMs without human intervention\"\n      ]\n    },\n    {\n      \"claim\": \"Devin is currently in early access as we ramp up capacity.\",\n      \"kind\": \"availability\",\n      \"queries\": [\n        \"Devin AI early access release date\",\n        \"Cognition AI Devin availability waitlist status\"\n      ]\n    },\n    {\n      \"claim\": \"We are well funded, including a $21 million Series A led by Founders Fund.\",\n      \"kind\": \"funding\",\n      \"queries\": [\n        \"Cognition AI Series A funding amount Founders Fund\",\n        \"Cognition Labs funding round 2024 announcement\"\n      ]\n    }\n  ],\n  \"prior_art_candidates\": [\n    \"SWE-bench state-of-the-art models\",\n    \"1.96% baseline models\",\n    \"4.80% models with file hints\"\n  ],\n  \"prior_art_queries\": [\n    \"SWE-bench leaderboard 2024 top AI code agents\",\n    \"best AI code assistant for GitHub issue resolution before March 2024\"\n  ]\n}",
+  "parsed": {
+    "category": "tool",
+    "source": {
+      "type": "primary",
+      "affiliated": true
+    },
+    "claims": [
+      {
+        "claim": "Devin correctly resolves 13.86%* of the issues end-to-end, far exceeding the previous state-of-the-art of 1.96%.",
+        "kind": "benchmark",
+        "queries": [
+          "SWE-bench benchmark results 2024 AI code agent",
+          "Devin AI vs state-of-the-art SWE-bench performance independent evaluation"
+        ]
+      },
+      {
+        "claim": "Even when given the exact files to edit, the best previous models can only resolve 4.80% of issues.",
+        "kind": "benchmark",
+        "queries": [
+          "SWE-bench performance with file hints AI models",
+          "AI code agent accuracy with ground truth files SWE-bench"
+        ]
+      },
+      {
+        "claim": "Devin was evaluated on a random 25% subset of the dataset.",
+        "kind": "benchmark",
+        "queries": [
+          "SWE-bench evaluation protocol subset size",
+          "Devin AI SWE-bench evaluation methodology independent source"
+        ]
+      },
+      {
+        "claim": "Devin can train and fine tune its own AI models. Devin sets up fine tuning for a large language model given only a link to a research repository on GitHub.",
+        "kind": "capability",
+        "queries": [
+          "Devin AI fine-tune large language models autonomously",
+          "AI agent training and fine-tuning LLMs without human intervention"
+        ]
+      },
+      {
+        "claim": "Devin is currently in early access as we ramp up capacity.",
+        "kind": "availability",
+        "queries": [
+          "Devin AI early access release date",
+          "Cognition AI Devin availability waitlist status"
+        ]
+      },
+      {
+        "claim": "We are well funded, including a $21 million Series A led by Founders Fund.",
+        "kind": "funding",
+        "queries": [
+          "Cognition AI Series A funding amount Founders Fund",
+          "Cognition Labs funding round 2024 announcement"
+        ]
+      }
+    ],
+    "prior_art_candidates": [
+      "SWE-bench state-of-the-art models",
+      "1.96% baseline models",
+      "4.80% models with file hints"
+    ],
+    "prior_art_queries": [
+      "SWE-bench leaderboard 2024 top AI code agents",
+      "best AI code assistant for GitHub issue resolution before March 2024"
+    ]
+  }
+}

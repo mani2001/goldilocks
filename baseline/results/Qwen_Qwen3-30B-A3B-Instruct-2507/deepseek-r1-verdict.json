@@ -1,0 +1,140 @@
+{
+  "raw": "{\n  \"category\": \"model_release\",\n  \"source\": {\n    \"type\": \"press\",\n    \"affiliated\": false\n  },\n  \"evidence\": [\n    [1, \"https://techcrunch.com/2025/01/27/deepseek-claims-its-reasoning-model-beats-openais-o1-on-certain-benchmarks/\", \"independent\"],\n    [2, \"https://huggingface.co/deepseek-ai/DeepSeek-R1\", \"affiliated, registry check (artefact exists)\"],\n    [3, \"https://arxiv.org/abs/2501.12948\", \"affiliated\"],\n    [4, \"https://techcrunch.com/2025/01/28/hugging-face-researchers-are-trying-to-build-a-more-open-version-of-deepseeks-ai-reasoning-model/\", \"independent\"],\n    [5, \"https://deepseekai.guide/comparisons/deepseek-r1-vs-openai-o1/\", \"independent\"]\n  ],\n  \"claims\": [\n    {\n      \"claim\": \"DeepSeek-R1 beats OpenAI's o1 on the benchmarks AIME, MATH-500, and SWE-bench Verified.\",\n      \"kind\": \"benchmark\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [5]\n    },\n    {\n      \"claim\": \"R1 is available from the AI dev platform Hugging Face under an MIT license.\",\n      \"kind\": \"availability\",\n      \"status\": \"confirmed\",\n      \"evidence_ids\": [2]\n    },\n    {\n      \"claim\": \"The full R1 requires beefier hardware, but it is available through DeepSeek's API at prices 90%-95% cheaper than OpenAI's o1.\",\n      \"kind\": \"pricing\",\n      \"status\": \"unverifiable\",\n      \"evidence_ids\": []\n    },\n    {\n      \"claim\": \"R1 contains 671 billion parameters.\",\n      \"kind\": \"capability\",\n      \"status\": \"confirmed\",\n      \"evidence_ids\": [3]\n    },\n    {\n      \"claim\": \"The smallest distilled version of R1 can run on a laptop.\",\n      \"kind\": \"capability\",\n      \"status\": \"unverifiable\",\n      \"evidence_ids\": []\n    },\n    {\n      \"claim\": \"R1 won't answer questions about Tiananmen Square or Taiwan's autonomy.\",\n      \"kind\": \"capability\",\n      \"status\": \"self_reported\",\n      \"evidence_ids\": [1]\n    }\n  ],\n  \"access\": {\n    \"status\": \"shipped\",\n    \"via\": [\n      \"weights\",\n      \"api\"\n    ],\n    \"price_known\": false,\n    \"evidence_ids\": [\n      2,\n      5\n    ]\n  },\n  \"delta\": [\n    \"Released on Hugging Face under MIT license\",\n    \"671B parameter count confirmed\",\n    \"API availability announced with claimed cost advantage\"\n  ],\n  \"prior_art\": [\n    {\n      \"name\": \"Open-source reasoning models with 671 billion parameters\",\n      \"differs\": \"No prior open-source model with 671B parameters has been independently confirmed.\",\n      \"evidence_ids\": [\n        3\n      ]\n    },\n    {\n      \"name\": \"Models with distilled versions from 1.5B to 70B parameters\",\n      \"differs\": \"Distillation to 1.5B is notable, but not unprecedented; several models have been distilled to similar sizes.\",\n      \"evidence_ids\": [\n        3\n      ]\n    }\n  ],\n  \"substance\": \"new_model\",\n  \"undisclosed\": [\n    \"pricing\",\n    \"eval_method\",\n    \"eval_independent\",\n    \"rate_limits\"\n  ],\n  \"category_record\": {\n    \"params\": 671000000000,\n    \"license\": \"MIT\",\n    \"context_length\": null,\n    \"weights_url\": \"https://huggingface.co/deepseek-ai/DeepSeek-R1\",\n    \"benchmarks_reported\": [\n      \"AIME\",\n      \"MATH-500\",\n      \"SWE-bench Verified\"\n    ],\n    \"benchmarks_independent\": []\n  },\n  \"novelty\": 3,\n  \"slop\": 4,\n  \"confidence\": \"low\",\n  \"recheck_when\": null,\n  \"tldr\": \"DeepSeek-R1 is released on Hugging Face with 671B parameters and MIT license; claims of beating o1 are unverified, pricing and hardware claims lack evidence.\"\n}",
+  "parsed": {
+    "category": "model_release",
+    "source": {
+      "type": "press",
+      "affiliated": false
+    },
+    "evidence": [
+      [
+        1,
+        "https://techcrunch.com/2025/01/27/deepseek-claims-its-reasoning-model-beats-openais-o1-on-certain-benchmarks/",
+        "independent"
+      ],
+      [
+        2,
+        "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+        "affiliated, registry check (artefact exists)"
+      ],
+      [
+        3,
+        "https://arxiv.org/abs/2501.12948",
+        "affiliated"
+      ],
+      [
+        4,
+        "https://techcrunch.com/2025/01/28/hugging-face-researchers-are-trying-to-build-a-more-open-version-of-deepseeks-ai-reasoning-model/",
+        "independent"
+      ],
+      [
+        5,
+        "https://deepseekai.guide/comparisons/deepseek-r1-vs-openai-o1/",
+        "independent"
+      ]
+    ],
+    "claims": [
+      {
+        "claim": "DeepSeek-R1 beats OpenAI's o1 on the benchmarks AIME, MATH-500, and SWE-bench Verified.",
+        "kind": "benchmark",
+        "status": "self_reported",
+        "evidence_ids": [
+          5
+        ]
+      },
+      {
+        "claim": "R1 is available from the AI dev platform Hugging Face under an MIT license.",
+        "kind": "availability",
+        "status": "confirmed",
+        "evidence_ids": [
+          2
+        ]
+      },
+      {
+        "claim": "The full R1 requires beefier hardware, but it is available through DeepSeek's API at prices 90%-95% cheaper than OpenAI's o1.",
+        "kind": "pricing",
+        "status": "unverifiable",
+        "evidence_ids": []
+      },
+      {
+        "claim": "R1 contains 671 billion parameters.",
+        "kind": "capability",
+        "status": "confirmed",
+        "evidence_ids": [
+          3
+        ]
+      },
+      {
+        "claim": "The smallest distilled version of R1 can run on a laptop.",
+        "kind": "capability",
+        "status": "unverifiable",
+        "evidence_ids": []
+      },
+      {
+        "claim": "R1 won't answer questions about Tiananmen Square or Taiwan's autonomy.",
+        "kind": "capability",
+        "status": "self_reported",
+        "evidence_ids": [
+          1
+        ]
+      }
+    ],
+    "access": {
+      "status": "shipped",
+      "via": [
+        "weights",
+        "api"
+      ],
+      "price_known": false,
+      "evidence_ids": [
+        2,
+        5
+      ]
+    },
+    "delta": [
+      "Released on Hugging Face under MIT license",
+      "671B parameter count confirmed",
+      "API availability announced with claimed cost advantage"
+    ],
+    "prior_art": [
+      {
+        "name": "Open-source reasoning models with 671 billion parameters",
+        "differs": "No prior open-source model with 671B parameters has been independently confirmed.",
+        "evidence_ids": [
+          3
+        ]
+      },
+      {
+        "name": "Models with distilled versions from 1.5B to 70B parameters",
+        "differs": "Distillation to 1.5B is notable, but not unprecedented; several models have been distilled to similar sizes.",
+        "evidence_ids": [
+          3
+        ]
+      }
+    ],
+    "substance": "new_model",
+    "undisclosed": [
+      "pricing",
+      "eval_method",
+      "eval_independent",
+      "rate_limits"
+    ],
+    "category_record": {
+      "params": 671000000000,
+      "license": "MIT",
+      "context_length": null,
+      "weights_url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+      "benchmarks_reported": [
+        "AIME",
+        "MATH-500",
+        "SWE-bench Verified"
+      ],
+      "benchmarks_independent": []
+    },
+    "novelty": 3,
+    "slop": 4,
+    "confidence": "low",
+    "recheck_when": null,
+    "tldr": "DeepSeek-R1 is released on Hugging Face with 671B parameters and MIT license; claims of beating o1 are unverified, pricing and hardware claims lack evidence."
+  }
+}

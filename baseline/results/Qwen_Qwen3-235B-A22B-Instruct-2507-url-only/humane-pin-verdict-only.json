@@ -1,0 +1,156 @@
+{
+  "category": "model_release",
+  "source": {
+    "type": "press",
+    "affiliated": false
+  },
+  "evidence": [
+    {
+      "id": 1,
+      "url": "https://www.macrumors.com/2023/11/09/humane-ai-pin/",
+      "independent": true
+    },
+    {
+      "id": 2,
+      "url": "https://www.cmswire.com/the-wire/humane-launches-ai-pin-marking-a-new-beginning-for-personal-ai-devices/",
+      "independent": false
+    },
+    {
+      "id": 3,
+      "url": "https://www.digitec.ch/en/page/new-hype-gadget-with-ai-what-it-can-do-and-what-it-cant-30436",
+      "independent": true
+    },
+    {
+      "id": 4,
+      "url": "https://tech.co/news/humane-ai-pin-price-specs-launch",
+      "independent": true
+    },
+    {
+      "id": 5,
+      "url": "https://www.essilorluxottica.com/en/newsroom/press-releases/ray-ban-and-meta-launch-the-next-generation-of-smart-glasses/",
+      "independent": true
+    }
+  ],
+  "claims": [
+    {
+      "claim": "The Ai Pin is priced at $700.",
+      "kind": "pricing",
+      "status": "confirmed",
+      "evidence_ids": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "claim": "There is a $24 monthly subscription required to use the device on the Humane network, which is powered by T-Mobile.",
+      "kind": "pricing",
+      "status": "confirmed",
+      "evidence_ids": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "claim": "Orders for the Ai Pin are set to begin in the United States on November 16.",
+      "kind": "availability",
+      "status": "confirmed",
+      "evidence_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "claim": "The Ai Pin has a laser projector that can project information onto the user's hand, which Humane calls a 'Laser Ink Display'.",
+      "kind": "capability",
+      "status": "self_reported",
+      "evidence_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "claim": "The device has cellular connectivity and can be used to answer phone calls from trusted contacts.",
+      "kind": "capability",
+      "status": "self_reported",
+      "evidence_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "claim": "A built-in 13-megapixel ultra wide-angle camera can be used to capture photographs and videos, either using a two-finger double tap or a voice command.",
+      "kind": "capability",
+      "status": "self_reported",
+      "evidence_ids": [
+        1,
+        2
+      ]
+    }
+  ],
+  "access": {
+    "status": "announced",
+    "via": [
+      "device"
+    ],
+    "price_known": true,
+    "evidence_ids": [
+      1,
+      3,
+      4
+    ]
+  },
+  "delta": [
+    "introduces a wearable AI device with hand-projection interface",
+    "requires $24/month subscription for cellular connectivity",
+    "no traditional display; interaction via voice, hand gestures, and touch"
+  ],
+  "prior_art": [
+    {
+      "name": "Meta Ray-Ban Smart Glasses",
+      "differs": "Ray-Ban glasses use audio and LED cues; Ai Pin uses laser projection on hand and has no apps, relying solely on AI interaction.",
+      "evidence_ids": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "Wearables with gesture control and projection",
+      "differs": "Prior research prototypes (e.g., MIT Media Lab's SixthSense) used camera-projector systems on wearables, but none commercialized with AI-first interface and cellular subscription model.",
+      "evidence_ids": [
+        1,
+        3
+      ]
+    }
+  ],
+  "substance": "integration",
+  "undisclosed": [
+    "eval_method",
+    "eval_independent",
+    "param_count",
+    "training_data",
+    "license",
+    "rate_limits",
+    "release_date"
+  ],
+  "category_record": {
+    "price": 700,
+    "subscription": 24,
+    "order_date": "2023-11-16",
+    "ship_date": null,
+    "specs_undisclosed": [
+      "param_count",
+      "training_data",
+      "license",
+      "rate_limits",
+      "eval_method",
+      "eval_independent"
+    ]
+  },
+  "novelty": 3,
+  "slop": 4,
+  "confidence": "med",
+  "recheck_when": "device ships and independent reviews available",
+  "tldr": "Humane launched a $700 AI wearable with hand-projection interface and $24/month fee, but core AI and hardware claims remain self-reported ahead of shipping."
+}
