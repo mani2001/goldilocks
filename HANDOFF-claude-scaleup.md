@@ -37,8 +37,12 @@ the evidence layer, swappable.
   -o ProxyCommand="python3 ~/workspace/hermes/ssh_via_proxy.py %h %p" root@100.104.184.116`.
   Idle sessions die ~300s — run long jobs detached (`nohup … & disown`, log to a file).
   The public-IP route (2.25.115.132) is broken; use the tailnet IP.
-- **Claude Code on the Mac does NOT have this directory yet.** Sync it first
-  (from the VPS `/root/receipts/` or from the sandbox) before doing anything else.
+- **This repo (Mac):** `~/Desktop/receipts/` on Mani's Mac, git remote
+  `git@github.com:mani2001/receipts.git` (public). This is the copy Claude Code
+  works in — the sync is already done. Commit and push work as you go.
+- **SSH to the VPS from the Mac:** direct over Tailscale, no proxy needed:
+  `ssh root@100.104.184.116` (the Mac's key is in the VPS authorized_keys,
+  verified 2026-11-15). The sandbox route below is Vyomi's only.
 
 ## Keys (VPS only — never copy to the Mac or the sandbox)
 
