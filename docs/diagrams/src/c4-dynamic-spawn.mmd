@@ -1,0 +1,23 @@
+---
+title: "C4 Dynamic — Picking a model for a subagent"
+---
+sequenceDiagram
+  autonumber
+  participant H as Coding harness<br/>(parent agent)
+  participant A as Harness adapter<br/>[hook]
+  participant E as run_decision.py<br/>[decision engine]
+  participant S as Evidence store<br/>[results.json]
+  participant F as fetch_evidence.py
+  participant P as Model provider
+  H->>A: Spawns subagent with task + type
+  A->>E: Requests pick (task, constraints) [JSON]
+  E->>S: Reads candidate features, checks as_of
+  opt Stale or allowed list changed
+    E-)F: Starts background refresh
+    F-)S: Writes new results.json atomically
+  end
+  E->>E: Mask, encode, score, calibrate, rank
+  E-->>A: pick, confidence, runners-up (or fallback + reason)
+  A->>H: Rewrites subagent model+provider
+  H->>P: Runs subagent [HTTPS]
+  P-->>H: Result (actual model logged)

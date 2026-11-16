@@ -1,0 +1,36 @@
+---
+title: "C4 Level 2 — Containers (training): Goldilocks training pipeline"
+---
+flowchart TB
+  bench["<b>LLMRouterBench</b><br/>[Dataset — external]"]:::ext
+  teacher["<b>Frontier teacher</b><br/>[Software System — external]"]:::ext
+  hf["<b>Hugging Face Hub</b><br/>[Software System — external]"]:::ext
+  subgraph pipe["Goldilocks training pipeline [Software System]"]
+    sampler["<b>Prompt sampler</b><br/>[Container: Python]<br/>Stratified sample; train/val/test split"]:::cont
+    profiles["<b>Constraint generator</b><br/>[Container: Python, versioned]<br/>Synthetic budget, latency, context profiles"]:::cont
+    snapshot["<b>Candidate snapshot</b><br/>[Container: runtime fetcher + schema]<br/>Frozen candidate features"]:::cont
+    serial["<b>Feature serialiser</b><br/>[Shared library — also used at runtime]<br/>One input format everywhere"]:::comp
+    labeller["<b>Teacher labeller</b><br/>[Container: Python, batched, spend cap]<br/>Gets ranked picks from teacher"]:::cont
+    gate["<b>Teacher-quality gate</b><br/>[Container: Python]<br/>Teacher must beat rules engine on pilot"]:::cont
+    labels[("<b>Label store</b><br/>[Container: Parquet]<br/>Labels + teacher ID, prompt hash, snapshot ID")]:::cont
+    trainer["<b>Trainer</b><br/>[Container: PyTorch on GPU]<br/>Fine-tunes Laya ranking head"]:::cont
+    calib["<b>Calibrator + eval</b><br/>[Container: Python]<br/>Fits temperature; scores vs baselines"]:::cont
+  end
+  bench -->|"Prompts"| sampler
+  sampler --> profiles
+  profiles -->|"Prompt + constraints"| serial
+  snapshot -->|"Candidates"| serial
+  serial -->|"Contexts"| labeller
+  labeller <-->|"Label requests [API]"| teacher
+  labeller -->|"Pilot labels"| gate
+  gate -->|"Releases bulk labelling"| labels
+  labels -->|"Trains on"| trainer
+  trainer -->|"Checkpoint"| calib
+  calib -->|"Publishes if targets met"| hf
+  style pipe fill:none,stroke:#444,stroke-dasharray:6 4
+  classDef person fill:#08427B,stroke:#052E56,color:#fff
+  classDef sys fill:#1168BD,stroke:#0B4884,color:#fff
+  classDef ext fill:#999999,stroke:#6B6B6B,color:#fff
+  classDef cont fill:#438DD5,stroke:#2E6295,color:#fff
+  classDef comp fill:#85BBF0,stroke:#5D82A8,color:#000
+  linkStyle default stroke:#555,stroke-width:1.5px

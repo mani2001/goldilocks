@@ -1,0 +1,35 @@
+---
+title: "C4 Level 2 — Containers (runtime): Goldilocks plugin"
+---
+flowchart TB
+  harness["<b>Coding harness</b><br/>[Software System — external]<br/>Claude Code / OpenCode / Codex / Pi"]:::ext
+  evidence["<b>Evidence sources</b><br/>[Software System — external]<br/>Provider APIs, pricing pages, AA"]:::ext
+  subgraph gold["Goldilocks plugin [Software System]"]
+    adapter["<b>Harness adapter</b><br/>[Container: hook / plugin per harness]<br/>Catches subagent spawn, applies pick"]:::cont
+    engine["<b>Decision engine</b><br/>[Container: run_decision.py / local daemon]<br/>Masks, encodes, ranks, calibrates"]:::cont
+    config[("<b>User config</b><br/>[Container: file]<br/>Allowed providers/models, constraints")]:::cont
+    weights[("<b>Weights</b><br/>[Container: pinned HF revision]<br/>Fine-tuned Laya + temperature")]:::cont
+    store[("<b>Evidence store</b><br/>[Container: results.json]<br/>Typed candidate data, as_of, last N versions")]:::cont
+    log[("<b>Decision log</b><br/>[Container: local JSONL]<br/>Inputs, pick, confidence, fallback reason")]:::cont
+    skill["<b>Refresh skill</b><br/>[Container: skill file]<br/>Tells agent when results.json is stale"]:::cont
+    fetcher["<b>Evidence fetcher</b><br/>[Container: fetch_evidence.py]<br/>Pulls prices, availability, benchmarks"]:::cont
+  end
+  harness -->|"1 Fires spawn event [hook]"| adapter
+  adapter -->|"2 Requests pick [JSON]"| engine
+  engine -->|"Reads hard constraints"| config
+  engine -->|"Loads"| weights
+  engine -->|"Reads candidate features"| store
+  engine -->|"Appends decision"| log
+  adapter -->|"3 Sets subagent model+provider<br/>[tool input / config]"| harness
+  skill -->|"Triggers when stale or<br/>allowed list changes"| fetcher
+  fetcher -->|"Fetches from structured APIs [HTTPS]"| evidence
+  fetcher -->|"Writes atomically"| store
+  style gold fill:none,stroke:#444,stroke-dasharray:6 4
+  classDef person fill:#08427B,stroke:#052E56,color:#fff
+  classDef sys fill:#1168BD,stroke:#0B4884,color:#fff
+  classDef ext fill:#999999,stroke:#6B6B6B,color:#fff
+  classDef cont fill:#438DD5,stroke:#2E6295,color:#fff
+  classDef comp fill:#85BBF0,stroke:#5D82A8,color:#000
+  linkStyle default stroke:#555,stroke-width:1.5px
+  snap["<b>Published snapshot</b><br/>[Software System — external]<br/>Daily results.json built by maintainers' CI"]:::ext
+  fetcher -->|"Downloads by default<br/>(no user API keys)"| snap

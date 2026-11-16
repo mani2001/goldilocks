@@ -1,0 +1,37 @@
+---
+title: "C4 Level 3 — Components: Decision engine (Approach B)"
+---
+flowchart TB
+  adapter["<b>Harness adapter</b><br/>[Container]<br/>Sends task + subagent type"]:::cont
+  config[("<b>User config</b><br/>[Container]<br/>Allowed list, constraints")]:::cont
+  store[("<b>Evidence store</b><br/>[Container: results.json]<br/>Candidate features")]:::cont
+  subgraph engine["Decision engine [Container]"]
+    guard["<b>Request + freshness guard</b><br/>[Component: code]<br/>Validates request; checks schema version, as_of"]:::comp
+    mask["<b>Hard-constraint mask</b><br/>[Component: code]<br/>Drops unavailable, short-context, wrong-modality"]:::comp
+    serial["<b>Feature serialiser</b><br/>[Component: shared library]<br/>Model input; no names, shuffled order"]:::comp
+    laya["<b>Laya encoder + choice head</b><br/>[Component: ModernBERT-large, 421M]<br/>Scores each remaining candidate"]:::comp
+    calib["<b>Calibrator</b><br/>[Component: temperature]<br/>Scores → calibrated confidence"]:::comp
+    rank["<b>Ranker</b><br/>[Component: code]<br/>Top pick + runners-up under same mask"]:::comp
+    fallback["<b>Fallback policy</b><br/>[Component: code]<br/>Inherit parent model on timeout,<br/>empty mask or error"]:::comp
+    resp["<b>Response assembler</b><br/>[Component: code]<br/>pick, confidence, runners_up,<br/>as_of, weights_rev"]:::comp
+  end
+  adapter -->|"Request [JSON]"| guard
+  guard -->|"Valid request"| mask
+  config -.->|"Read by"| mask
+  store -.->|"Read by"| mask
+  mask -->|"Eligible candidates"| serial
+  serial -->|"Tokens"| laya
+  laya -->|"Raw scores"| calib
+  calib -->|"Probabilities"| rank
+  rank -->|"Ranked list"| resp
+  guard -->|"Failures"| fallback
+  mask -->|"Nothing eligible"| fallback
+  fallback -->|"Default pick + reason"| resp
+  resp -->|"Response [JSON]"| adapter
+  style engine fill:none,stroke:#444,stroke-dasharray:6 4
+  classDef person fill:#08427B,stroke:#052E56,color:#fff
+  classDef sys fill:#1168BD,stroke:#0B4884,color:#fff
+  classDef ext fill:#999999,stroke:#6B6B6B,color:#fff
+  classDef cont fill:#438DD5,stroke:#2E6295,color:#fff
+  classDef comp fill:#85BBF0,stroke:#5D82A8,color:#000
+  linkStyle default stroke:#555,stroke-width:1.5px

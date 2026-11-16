@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "skills": {
+    "c4-architecture": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/c4-architecture/SKILL.md",
+      "computedHash": "2528e8ea65472b188f160cd95ae6737d6305b8afb6c384a3cc48fcd5284ae768"
+    }
+  }
+}

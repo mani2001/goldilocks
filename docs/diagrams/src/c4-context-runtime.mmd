@@ -1,0 +1,25 @@
+---
+title: "C4 Level 1 — System Context (runtime): Goldilocks plugin"
+---
+flowchart TB
+  dev["<b>Developer</b><br/>[Person]<br/>Works in a coding harness;<br/>sets allowed providers + constraints"]:::person
+  subgraph local["Developer machine — trust boundary: prompts stay local"]
+    harness["<b>Coding harness</b><br/>[Software System — external]<br/>Claude Code via OpenRouter, OpenCode,<br/>Codex or Pi; spawns subagents"]:::ext
+    gold["<b>Goldilocks plugin</b><br/>[Software System]<br/>Picks model+provider per subagent;<br/>returns pick, confidence, runners-up"]:::sys
+  end
+  providers["<b>Model providers</b><br/>[Software System — external]<br/>OpenRouter, Nebius Token Factory,<br/>Baseten, first-party APIs"]:::ext
+  evidence["<b>Evidence sources</b><br/>[Software System — external]<br/>Provider model-list APIs, Artificial Analysis API,<br/>published Goldilocks snapshot"]:::ext
+  hf["<b>Hugging Face Hub</b><br/>[Software System — external]<br/>Hosts pinned Goldilocks weights"]:::ext
+  dev -->|"Gives tasks to"| harness
+  harness -->|"Asks for a pick on subagent spawn<br/>[hook, JSON]"| gold
+  gold -->|"Returns pick"| harness
+  harness -->|"Runs subagent on picked model<br/>[HTTPS]"| providers
+  gold -->|"Downloads daily snapshot or fetches<br/>structured APIs [HTTPS, on refresh only]"| evidence
+  gold -->|"Downloads weights once<br/>[HTTPS]"| hf
+  style local fill:none,stroke:#444,stroke-dasharray:6 4
+  classDef person fill:#08427B,stroke:#052E56,color:#fff
+  classDef sys fill:#1168BD,stroke:#0B4884,color:#fff
+  classDef ext fill:#999999,stroke:#6B6B6B,color:#fff
+  classDef cont fill:#438DD5,stroke:#2E6295,color:#fff
+  classDef comp fill:#85BBF0,stroke:#5D82A8,color:#000
+  linkStyle default stroke:#555,stroke-width:1.5px

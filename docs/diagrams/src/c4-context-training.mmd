@@ -1,0 +1,23 @@
+---
+title: "C4 Level 1 — System Context (training): Goldilocks training pipeline"
+---
+flowchart TB
+  maint["<b>Maintainer</b><br/>[Person]<br/>Runs labelling, training, evaluation"]:::person
+  pipe["<b>Goldilocks training pipeline</b><br/>[Software System]<br/>Labels prompts, fine-tunes Laya,<br/>calibrates, evaluates"]:::sys
+  bench["<b>LLMRouterBench</b><br/>[Dataset — external]<br/>23,945 prompts, 21 datasets"]:::ext
+  teacher["<b>Frontier teacher model</b><br/>[Software System — external]<br/>Ranks candidates for each prompt"]:::ext
+  evidence["<b>Evidence sources</b><br/>[Software System — external]<br/>Same sources as runtime fetcher"]:::ext
+  gpu["<b>GPU host</b><br/>[Infrastructure — external]<br/>RunPod RTX 4090 or similar"]:::ext
+  hf["<b>Hugging Face Hub</b><br/>[Software System — external]<br/>Weights, model card, labels"]:::ext
+  maint -->|"Runs"| pipe
+  pipe -->|"Downloads prompts<br/>[HF tarball]"| bench
+  pipe -->|"Sends public prompts + candidate features<br/>[API, batched]"| teacher
+  pipe -->|"Builds candidate snapshot<br/>[HTTPS]"| evidence
+  pipe -->|"Runs fine-tuning on"| gpu
+  pipe -->|"Publishes pinned release"| hf
+  classDef person fill:#08427B,stroke:#052E56,color:#fff
+  classDef sys fill:#1168BD,stroke:#0B4884,color:#fff
+  classDef ext fill:#999999,stroke:#6B6B6B,color:#fff
+  classDef cont fill:#438DD5,stroke:#2E6295,color:#fff
+  classDef comp fill:#85BBF0,stroke:#5D82A8,color:#000
+  linkStyle default stroke:#555,stroke-width:1.5px
