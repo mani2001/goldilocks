@@ -97,16 +97,22 @@ The team discussed the open questions on a call. Each argument below gives the v
 
 **S6. Where does benchmark data come from: the Artificial Analysis API key, a general scraper (Tavily/Exa extract or crawl), or many benchmark sites such as Vals?**
 
-This was the main unresolved argument. *Verdict:* use structured sources, fixed per feature-schema version, and a published snapshot so users need no keys.
+This was the main argument on the call. *Team verdict (end of call):*
+- **Artificial Analysis is the primary benchmark source.** The team agreed it is the most widely trusted index because it runs every model through its own harness.
+- **Extract, never search.** A search query returns blog posts and opinion pages. Goldilocks only needs benchmark numbers, so the fetch step extracts or crawls a fixed **allow-list of pages**. The list starts with every Artificial Analysis page the feature schema uses (each tab, such as each domain index, is its own URL). Other benchmark pages, such as Vals, can be added to the list.
+- **One crawler key, not one key per source.** Requiring a separate Artificial Analysis API key was rejected as too much setup for the user. Any extract or crawl provider (Tavily, Exa or another) can read any page on the list, so the user configures one key.
+- **Cache per URL, convert once per refresh.** Crawled pages are cached per URL. The harness LLM turns the cached pages into the typed `results.json` once per refresh (for example, by finding each allowed model in the page text). This step costs reasoning tokens, but it runs once per refresh (default daily, or when the allowed list changes), not once per decision.
+
+*Constraints the team verdict must still meet (from review):*
 - **Data sources are fixed when the model is trained.** The student learned from features built from specific sources through the capability mapping. A score scraped from Vals at runtime does nothing unless the mapping includes it, and changing the mapping changes the inputs the student sees. So "support any benchmark site the user trusts" is not something runtime scraping can deliver. Adding a source is a schema change: update the mapping, version it, and check it against the eval set.
-- **Use structured APIs for numbers.** Prices and benchmark scores feed straight into the model. Scraping HTML breaks when page layouts change. Extracting numbers from HTML with an LLM can copy a number wrongly with no visible error. The Artificial Analysis API returns typed per-benchmark data. The OpenRouter benchmarks API seen on the call may be a second structured source; its access terms are not yet checked. Provider prices and availability come from each provider's model-list API: OpenRouter `/api/v1/models`, which is public, and each other provider's `/v1/models` with the key the user already has for that provider.
-- **Answer to "too many dependencies on the user": a published snapshot.** The maintainers run `fetch_evidence.py` on a daily schedule, for example GitHub Actions, and publish a signed `results.json` to the repo or to HF. The plugin downloads that by default, so users need **no API keys** for benchmark data. Users who want fresher data, or their own sources, run the fetch script with their own keys. *Unverified:* whether Artificial Analysis's terms allow redistributing its numbers this way. If they do not, every user must use their own free key. A first-run prompt can open the sign-up page, as suggested on the call.
-- **General scraping (Tavily/Exa extract) is the fallback**, used only for sources with no API. It is restricted to a fixed allow-list of URLs, its output is validated (see S5), and it is never fed to the model as free text.
+- **Extracted numbers must be checked before they are written.** Extracting numbers from page text with an LLM can copy a number wrongly with no visible error. Every refresh runs the S5 checks (range, change from the previous snapshot, every allowed model present). Prices and availability need no crawling: each provider's model-list API (OpenRouter `/api/v1/models`, which is public, and each other provider's `/v1/models` with the key the user already has) returns typed data.
+- **Optional: a published snapshot.** The maintainers could run the fetch step daily (for example, in GitHub Actions) and publish `results.json`, so most users need no crawler key at all. *Unverified:* whether Artificial Analysis's terms allow redistributing its numbers. The OpenRouter benchmarks API seen on the call is a possible typed source; its access terms are not yet checked.
+- **Crawled text never reaches the model or the orchestrator as free text.** Page text could carry instructions aimed at the agent (prompt injection); only validated numbers go into `results.json`.
 
 **S7. Main agent or subagents?**
 *Verdict:* both, chosen by the user in config; a plugin setting, not a model question.
 - **Subagents:** picked when the orchestrator spawns them. Once a subagent is running it cannot change its own model, as agreed on the call.
-- **Main agent:** the idea is that a prompt-submit hook picks a model before the first request, while Claude Code shows a default model but hasn't sent anything yet. *Unverified:* whether any harness lets a hook change the session's model at that point. The harness spike (Risk 5) must test this specifically.
+- **Main agent:** the idea is that a prompt-submit hook picks a model before the first request, while Claude Code shows a default model but hasn't sent anything yet. *Spike result for Claude Code:* a prompt-submit hook can add context but cannot change the session's model, at that point or later in the same session (Risk 5). Main-agent picks in Claude Code need a launcher that picks first and then starts the harness with that model.
 
 **S8. How is this different from OpenRouter's router or gateway routers (Vercel, LangSmith, others)?**
 *Verdict:* being open source alone is not a reason for users to choose Goldilocks. The brief should claim only what a gateway-side router cannot do:
@@ -133,7 +139,7 @@ In this design, "correct" means "agrees with the teacher". On Day 0, the prompte
 
 **2. What the confidence number means.**
 Calibrated against teacher labels, confidence 0.8 means "80% chance the teacher would agree", not "80% chance this model completes the task". Users will read it as the second. There are also three mechanical problems:
-- One temperature is fitted on one snapshot of the candidate pool, and it drifts when `result.md` refreshes.
+- One temperature is fitted on one snapshot of the candidate pool, and it drifts when `results.json` refreshes.
 - Removing candidates with the hard-constraint mask changes the probability distribution after calibration.
 - "RLCD" in PLAN.md is never defined.
 
@@ -145,7 +151,7 @@ Calibrated against teacher labels, confidence 0.8 means "80% chance the teacher 
 
 **3. The candidate pool changes, and Approach B as written memorises names.**
 B puts the task and every candidate (name, prices, scores, all as text) into one sequence of at most 1,024 tokens. Two problems follow:
-- **Name memorisation.** The model will learn shortcuts like "Sonnet usually wins" instead of reading the features. When `result.md` refreshes with new models or prices, it meets inputs it never saw in training and gives no warning.
+- **Name memorisation.** The model will learn shortcuts like "Sonnet usually wins" instead of reading the features. When `results.json` refreshes with new models or prices, it meets inputs it never saw in training and gives no warning.
 - **Length.** About 20 candidates plus a long subagent prompt will not fit in 1,024 tokens.
 
 PLAN.md also contradicts itself: §3 scores each (task, candidate) pair separately, while §4.1 reads all candidates in one sequence.
@@ -166,17 +172,22 @@ LLMRouterBench is short, single-turn academic questions (maths, QA, code puzzles
 - Build an evaluation set of 100–300 realistic subagent prompts, such as SWE-bench/SWE-Gym task statements, or LLMRouterBench items rewritten into subagent style that keep their answer keys.
 - Pass the subagent type (explore, plan, implement, review, test) as a structured input.
 
-**5. The harness hook points are unverified.**
-The plan assumes every harness lets a plugin change a subagent's model and provider when the subagent is started. The review agents doubt this for each harness:
-- **Claude Code.** The OpenRouter route may be environment variables rather than an extension; the name and mechanism are unconfirmed. If it is environment variables, the base URL is fixed when the process starts, and per-subagent provider choice may need a local routing proxy. The likely hook is a `PreToolUse` hook that rewrites the subagent tool's input.
-- **OpenCode.** Agent models are set in static config. Changing them when a subagent starts is unconfirmed.
-- **Codex.** Native subagents with different models is unconfirmed.
-- **Pi.** May not have built-in subagents at all.
+**5. The harness hook points are partly verified (Claude Code spike run 2026-11-15; other harnesses below).**
+The plan assumes every harness lets a plugin change a subagent's model and provider when the subagent is started.
+- **Claude Code 2.1.322, tested by running it.** Evidence is the per-model billing (`modelUsage`) in `claude -p --output-format json`, not the model's own report.
+  - *Subagent hook: works, with a limit.* A `PreToolUse` hook on the `Agent` tool receives the subagent's full prompt and can return a changed `updatedInput`. Rewriting `model` from `sonnet` to `haiku` moved the subagent's billing from Sonnet to Haiku. But the `model` field accepts only four aliases: `sonnet`, `opus`, `haiku`, `fable`. A full ID (`claude-haiku-5-5`) or a gateway ID (`openai/gpt-6.1-terra`) fails schema validation, and the spawn errors.
+  - *Way around the limit: works.* The hook can instead rewrite `subagent_type` to a Goldilocks agent file whose frontmatter sets `model:` to a full model ID. The subagent was billed as `claude-haiku-5-5` from that file. Costs of this route: the plugin must write one agent file per candidate model, and rerouting replaces the requested agent's system prompt and tool limits (an `Explore` agent would lose its read-only tools) unless the plugin also writes one file per agent type and candidate.
+  - *Non-Anthropic models: not tested.* Claude Code sends all requests to one base URL fixed at process start (`ANTHROPIC_BASE_URL`, for example OpenRouter). A gateway model ID in an agent file should then route through that gateway, but this was not run. Choosing a different *provider* per subagent would still need a local proxy or the gateway's own provider routing.
+  - *Main-session hook: does not work.* A `UserPromptSubmit` hook fires before the first request and can inject text: its `additionalContext` reached the model (verified). It has no output field for the model. Writing `model` into `.claude/settings.local.json` from the hook did not change the model for that turn or for a later turn in the same live session; only a new process picked it up. So "the model is not loaded until the first prompt" does not help: nothing can change the model at that point. The only main-session routes are a launcher that runs Goldilocks before starting `claude --model <pick>`, or the user running `/model`.
+- **OpenCode 2.2.3.** Has native subagents (the `subagent` tool, input `{agent, description, prompt, model}`, where `model` is `providerID/modelID`). *Subagent hook:* the source shows a plugin hook (`execute.before`) that sees the plaintext prompt and can replace the input, including a cross-provider model; OpenCode's own built-in plugin does this. Not run end to end, because no working OpenCode credential was available. *Main session: works (run).* A `prompt` hook called `switchModel` and the outgoing request used the new model and provider. *Injection: works (run).*
+- **Codex 0.169.0.** Has native subagents (`spawn_agent`, per-agent `model` in `.codex/agents/*.toml`). *Subagent hook: half works (run).* A `PreToolUse` hook on the spawn tool set `updatedInput.model`, and the subagent ran on that model while the parent kept its own. But the subagent's prompt reaches the hook encrypted, so Goldilocks cannot read the task it is picking for, and there is no provider field. *Main session: does not work (run).* `UserPromptSubmit` ignores a `model` output. *Injection: works (run).*
+- **Pi 0.87.1.** No built-in subagents; an example extension spawns child `pi --model X` processes, so Goldilocks would ship its own subagent tool. *Hooks: work (run).* An `input` hook ran an external command and called `setModel()`, switching provider and model before the first request; the same hook can rewrite the prompt. Since each subagent is a full `pi` process, this hook also covers subagents (by mechanism; not run as a subagent).
+- **Spike verdict.** OpenCode is the best first harness: native subagents, one hook that sees the plaintext prompt and sets provider and model, and a main-session switch. Pi works fully but needs its own subagent tool. Claude Code works for subagents through generated agent files, but cannot switch the main session's model and is limited to one gateway per process. Codex can force a subagent's model but cannot see the prompt, which blocks Goldilocks there.
 - **Main session.** Switching its model mid-conversation throws away the provider's prompt cache. On long sessions, that can make a "cheaper" pick cost more overall.
 
 *Mitigation:*
-- Run a one-day spike per harness. The test: one subagent whose model and provider were picked when it started and actually used, confirmed by billing or response headers.
-- Choose the first harness from the results.
+- Finish the two untested paths: OpenCode's subagent hook end to end with a working key, and a Claude Code agent file with a gateway model ID through OpenRouter.
+- Confirm OpenCode as the first harness once its subagent hook is verified.
 - Limit main-session switching to the start of a session, and only when the expected saving is larger than the cost of losing the prompt cache.
 
 ### Major risks
@@ -185,7 +196,7 @@ The plan assumes every harness lets a plugin change a subagent's model and provi
 
 **7. No plan for failures.** Several failure cases have no defined behaviour:
 - the daemon is down or times out;
-- `result.md` is missing or corrupt;
+- `results.json` is missing or corrupt;
 - every candidate is removed by the mask;
 - confidence is low;
 - the provider returns 404 or 429;
@@ -195,12 +206,12 @@ Write a table with one row per failure: the action (default: keep the parent's m
 - inputs and candidates before and after the mask;
 - the top probabilities;
 - a hash of the weights;
-- the `result.md` date;
+- the `results.json` date;
 - latency;
 - the model that actually ran.
 
 **8. Making `results.json` refresh reliably. Partly settled: S4–S6 chose JSON, typed sources and a published snapshot. These points still apply:**
-- Make `result.json`, with a schema version and typed fields, the file the engine reads. Generate `result.md` from it for humans to read.
+- Give `results.json` a schema version and typed fields; it is the only file the engine reads. If humans need a readable view, generate it from the JSON.
 - Have code, not the agent, check the file's age and whether the allowed list has changed. If the file is stale, serve the pick from the old file and refresh in the background.
 - Write refreshes atomically and keep the last few versions.
 - Treat 404 and 429 errors as a trigger to refresh.
@@ -265,7 +276,7 @@ Write a table with one row per failure: the action (default: keep the parent's m
 * **A. Transparent scoring function with margin-based confidence.** It masks hard constraints, weights capability match by cost per task, and calibrates confidence from the score gap between first and second place. *Rejected by author in favour of B.* Trade-off accepted: B's learned interactions in exchange for training and runtime cost. Review agents recommend keeping A as the fallback when the daemon is unavailable and as a required baseline.
 * **C. The harness LLM picks from structured evidence.** *Rejected by author in favour of B.* Trade-off accepted: a local model with no per-call API cost, in exchange for losing C's zero training cost and free explanations. On Day 0, C made the same picks as the rules engine, and its stated confidence is not calibrated. Review agents recommend keeping it as a baseline and as an escalation path when confidence is low.
 * **D. Encoder maps the task to capability needs; a separate ranker scores structured candidate features.** *Rejected by author in favour of B.* The review agents' main recommendation is a **B+D hybrid** that stays within B: Laya reads only the task, and a *learned* head scores unnamed candidate vectors. This removes the 1,024-token limit, name memorisation and refresh drift by design (see Risk 3). The author should state whether the rejection of D also covers this hybrid.
-* **Live web search on every decision.** *Rejected by author:* at the rate subagents are started, a few seconds and an API cost per decision is too much. Replaced by the cached `result.md`.
+* **Live web search on every decision.** *Rejected by author:* at the rate subagents are started, a few seconds and an API cost per decision is too much. Replaced by the cached `results.json`.
 * **The custom 100-task dev/test set.** *Rejected by author:* LLMRouterBench is the only source for train, validation and test. Review agents note it was the only set with constraints and success criteria, and suggest reusing it as a small measured-outcome check (see Risk 1).
 * **Existing routers** (OpenRouter Auto Router, NotDiamond, RouteLLM, LiteLLM routing). *Not yet weighed.* PLAN.md §1 covers the general gaps, but the brief needs one line per tool explaining why it does not meet the per-subagent, model-plus-provider, calibrated-confidence requirement.
 
@@ -276,7 +287,7 @@ Write a table with one row per failure: the action (default: keep the parent's m
 2. Decision engine is Approach B: fine-tuned Laya.
 3. Ground truth is the frontier teacher's pick, which accounts for cost per task and not only price. Goal: match the teacher at a fraction of its cost.
 4. Data is LLMRouterBench only, for train, validation and test. The 100-task set is dropped.
-5. Evidence: `fetch_evidence.py` writes `results.json` (JSON, not Markdown) from structured sources (S4–S6). A maintainer-published daily snapshot is the default if licences allow it. No live search on each decision.
+5. Evidence: `fetch_evidence.py` extracts a fixed allow-list of benchmark pages (Artificial Analysis first) with one crawler key, caches each page, and writes a validated `results.json` (JSON, not Markdown) once per refresh. Prices come from provider model-list APIs. No search, and no web access on each decision (S4–S6).
 6. Target harnesses are Claude Code (via OpenRouter), OpenCode, Codex and Pi. Picking a subagent's model is the main use; picking the main agent's model is a user option (S7).
 7. Decision path: a harness hook calls `run_decision.py` (subagent prompt + `results.json` + allowed list). The orchestrator spends no tokens on the decision (S3, S5).
 8. Price sensitivity is taught through counterfactual labelling (prices varied per example, names hidden) and checked on a price-shift test set (S1).
@@ -293,10 +304,10 @@ Write a table with one row per failure: the action (default: keep the parent's m
 7. **Constraint schema:** which constraints are hard and which soft, how constraint profiles are generated, and what happens when nothing is feasible. (Risk 11)
 8. **Cost-per-task formula** and where its token estimates come from. (Risk 11)
 9. **Meaning of "provider"**, and whether code chooses it with a lookup. (Risk 12)
-10. **First harness**, chosen by one-day spikes; the exact hook and the field it changes; whether Claude Code needs a proxy. (Risk 5)
+10. **First harness.** The spike points to OpenCode; confirm after its subagent hook runs end to end. Decide whether Codex stays a target, given its encrypted subagent prompt. (Risk 5)
 11. **Runtime:** daemon or one process per call, ONNX or PyTorch, reference hardware, latency target, timeout. (Risk 9)
 12. **Failure table:** the low-confidence threshold and the decision log schema. (Risk 7)
-13. **Evidence contract:** `result.json` schema, sources and API keys, how old the file may get, who refreshes it, rollback. (Risk 8)
+13. **Evidence contract:** `results.json` schema, sources and API keys, how old the file may get, who refreshes it, rollback. (Risk 8)
 14. **Versioning:** which input-format versions each weights release accepts, what triggers retraining, how a user rolls back.
 15. **Why B** (offline use, privacy, open weights, a base for outcome learning), and its break-even against A and C. (Risk 6)
 16. **Acceptance thresholds** for every metric in G3, G4 and latency.
@@ -306,7 +317,7 @@ Write a table with one row per failure: the action (default: keep the parent's m
 
 | PLAN.md | This brief |
 |---|---|
-| The harness searches the web (Tavily) on each decision | Cached `results.json` from structured sources; a published daily snapshot by default; refreshed by age or when the allowed list changes; a hook calls `run_decision.py` |
+| The harness searches the web (Tavily) on each decision | Cached `results.json` built from an allow-list of extracted benchmark pages (Artificial Analysis first) and provider model-list APIs; refreshed by age or when the allowed list changes; a hook calls `run_decision.py` |
 | Output fields: `fit_score`, `evidence_sufficient`, `reasons`, `warnings`, `alternatives`, `unconstrained_pick` | Pick, confidence, and runners-up under the same constraints only |
 | Custom 100-task set (50 dev / 50 test) plus LLMRouterBench | LLMRouterBench only |
 | Ground truth from hand-judged expected picks and measured outcomes | The frontier teacher's pick |
