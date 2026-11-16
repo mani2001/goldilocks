@@ -30,29 +30,29 @@ A harness hook calls `run_decision.py` when a subagent is spawned, so the orches
 
 **Level 1: system context at runtime.** At runtime, Goldilocks lives on the developer's machine next to the harness. Prompts stay local. Goldilocks only goes online to refresh evidence and to download weights once.
 
-![C4 System Context — runtime](docs/diagrams/c4-context-runtime.png)
+![C4 System Context — runtime](diagrams/c4-context-runtime.png)
 
 **Level 1: system context for training.** Training is a separate system. The teacher and the GPU appear here only. They are never called when a decision is made at runtime.
 
-![C4 System Context — training](docs/diagrams/c4-context-training.png)
+![C4 System Context — training](diagrams/c4-context-training.png)
 
 **Level 2: containers at runtime.**
 
-![C4 Containers — runtime](docs/diagrams/c4-container-runtime.png)
+![C4 Containers — runtime](diagrams/c4-container-runtime.png)
 
 **Level 2: containers for training.** The feature serialiser is shared: training and runtime must build model inputs in exactly the same way, or the model reads inputs at runtime that differ from what it was trained on.
 
-![C4 Containers — training](docs/diagrams/c4-container-training.png)
+![C4 Containers — training](diagrams/c4-container-training.png)
 
 **Level 3: components inside the decision engine.** Hard constraints are applied in code *before* the model scores anything, so the model cannot pick, or list as a runner-up, a candidate the user cannot use.
 
-![C4 Components — decision engine](docs/diagrams/c4-component-engine.png)
+![C4 Components — decision engine](diagrams/c4-component-engine.png)
 
 **Dynamic view: one subagent spawn.**
 
-![C4 Dynamic — subagent spawn](docs/diagrams/c4-dynamic-spawn.png)
+![C4 Dynamic — subagent spawn](diagrams/c4-dynamic-spawn.png)
 
-Diagram sources (Mermaid) are in `docs/diagrams/src/`.
+Diagram sources (Mermaid) are in `diagrams/src/`.
 
 ## Analysis
 
