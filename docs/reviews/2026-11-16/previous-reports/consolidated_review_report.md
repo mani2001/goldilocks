@@ -12,27 +12,32 @@
 
 **Reviewer status:** all 7 reviewer runs completed. These were zoom-out (twice), comprehension, design, structural and style. None of them opened the PNG renders.
 
-**Brief state:** the brief already includes the 2026-11-15 call outcomes and the harness spike results. It was not edited after the review started.
+**Brief state at review:** the brief included the 2026-11-15 call outcomes and the harness spike results, and was not edited during that review. On 2026-11-16 the author clarified the engine rationale and the two selection moments; the brief and item 1 below were updated. The stage reports remain historical, and the revised brief has not been re-reviewed.
 
-## The decision this review puts back to the authors
+## Engine decision: author clarification after review
 
 On the call, the team chose Approach B (fine-tuned Laya). They called A ("just if-else") and D irrelevant. Both zoom-out stages disagree. The Stage 8 reviewer argues:
 - Price is a number that changes daily. Learning it inside the model is what creates most of the hardest risks: S1 counterfactual labels, Risk 2 calibration drift, the Risk 3 name shortcut, and the Risk 10 labelling cost.
 - The Day 0 result was "feature gap, not model gap". The teacher matched the rules engine.
 - So v1 should be A: code scores the needs implied by the subagent type against capabilities and cost per task. B, or D with price kept out of the model, comes later and must beat A.
 
-This review cannot settle that choice; it belongs to the authors. Two outcomes:
-- **Keep B:** the brief must state why (offline use, open weights, groundwork for learning from outcomes), and every B-only fix in Stage 7 applies.
-- **Defer B:** most of the Stage 7 Majors fall away.
+**Author decision, 2026-11-16: retain B.** The local student aims to reproduce a frontier teacher's model-selection judgment at a fraction of its per-decision cost. It selects once from the user's opening prompt for the whole conversation, or once from the parent's initial task instructions for a subagent. This removes manual model selection and aims to reduce the parent's selection reasoning and delay. Better selections, lower total operating cost and better task results per dollar are the product goals.
+
+The missing-rationale part of finding 1 is addressed. The reviewer proposal to replace B with A is not adopted. B-specific risks remain relevant, and their proposed remedies still need evaluation; this decision does not approve all review recommendations. Initial-prompt sufficiency, student agreement on unfamiliar inputs, and actual task value remain unverified. The old teacher-cost figures must be reconciled before drawing an economic conclusion.
 
 ## Consolidated action items
 
-### Blockers
+### Author resolution of item 1; validation remains open
 
-**1. Decide the v1 engine and record the reason.**
+**1. The learned engine has a stated purpose; measure whether it delivers the intended benefits.**
 - Covers: Stage 5 B1, Stage 8 B1 and B2, critic C2.
-- Either keep B and state why, or adopt A for v1 with B or D later.
-- Every item marked *(B only)* below depends on this choice.
+- **Decision/rationale addressed:** retain fine-tuned Laya for local distillation of frontier selection judgment, with one choice per conversation or subagent task. See the revised brief's S3, S7 and Decision 2.
+- **Still open:** measure teacher agreement on unfamiliar tasks and changed candidate information; actual completed-task quality per dollar; local selection latency and cost; and the suitability of a fixed model across a full conversation selected from its first prompt.
+- Compare with simple baselines and the named frontier teacher; account for training/setup costs separately. A rationale is not evidence of measured superiority.
+- **Validation plan added, 2026-11-16:** [PLAN.md §6.4](PLAN.md#64-price-variation-test-added-2026-11-16-required-before-release) defines controlled price sweeps, provider price reversals, unseen-pool checks and comparison with code-based scoring. The test is planned, not executed; price handling remains an empirical design question.
+- This is an author-directed revision, not a fresh reviewer acceptance. Items marked *(B only)* remain applicable for consideration.
+
+### Remaining blockers
 
 **2. Fix the security hole in evidence extraction.**
 - Covers: critic C1, Stage 8 M1.
@@ -164,4 +169,4 @@ This review cannot settle that choice; it belongs to the authors. Two outcomes:
 
 ## Next step
 
-Answer item 1 (the engine) and item 2 (the evidence source) first; most of the other items depend on those two choices. Then run `/egm:egm-resolve` on this report, or edit the brief by hand, before `/egm-draft`.
+The engine choice and rationale in item 1 are now recorded. Resolve item 2 (the evidence source), define the evaluation for item 1's remaining assumptions and item 3's product-outcome claim, and address the other findings before `/egm-draft`. Item 4 remains a reviewer recommendation: the clarified scope includes both conversation-start and subagent-start selection, with OpenCode and Hermes as target examples and Hermes support unverified. Run `/egm:egm-resolve` on the remaining findings, or edit the brief by hand.

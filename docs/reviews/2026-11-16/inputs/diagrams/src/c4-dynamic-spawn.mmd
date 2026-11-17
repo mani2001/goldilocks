@@ -1,0 +1,26 @@
+---
+title: "C4 Dynamic — Choose once for a subagent task"
+---
+sequenceDiagram
+  autonumber
+  participant H as Parent agent / harness
+  participant A as Harness adapter
+  participant E as Local decision engine
+  participant S as Evidence cache
+  participant P as Selected model provider
+  Note over H,P: Proposed integration, Hermes support unverified
+  H->>A: Starts subagent with initial task instructions
+  A->>E: Requests one pick (instructions, allowed list, constraints)
+  E->>S: Reads candidate features and freshness
+  Note over E,S: Refresh policy handled separately, no per-turn selection
+  E->>E: Filter eligible candidates, score, calibrate, rank
+  E-->>A: Pick, confidence and runners-up
+  A->>H: Sets model and provider for this subagent
+  H->>P: Sends initial task to selected model
+  P-->>H: Returns response or tool requests
+  loop Remaining subagent work
+    H->>P: Sends follow-up and tool results to same model
+    P-->>H: Returns response or tool requests
+  end
+  Note over H,P: No further Goldilocks calls for this subagent task
+  Note over A,E: Selection failure uses fallback policy, details remain open
