@@ -5,7 +5,7 @@ Updated 2026-11-16. [README](../README.md) defines scope; [DESIGN](DESIGN.md) de
 ## 1. Build the Pi integration with the teacher
 
 - Inspect the current Pi extension APIs for conversation-start model switching, candidate/provider IDs and subagent execution. The historical 2026-11-15 spike reported a working main-input model switch; Pi had no native subagent mechanism in that spike, so the proposed child-process extension was not a verified subagent path. Reverify rather than relying on old versions.
-- Identify the user's **local Codex API** endpoint/protocol/authentication and executable Sol identifier. Use GPT-6.1 Sol at high effort. Do not silently substitute direct OpenAI API billing or Codex CLI.
+- Run the teacher as GPT-6 Astra at high reasoning effort on the user's **Codex subscription**, in multiple Pi coding-agent sessions with web search enabled. Verify the exact model identifier and session setup. Do not silently substitute direct OpenAI API billing.
 - Integrate Token Factory using the user's key; discover configured available candidates. Keep teacher access separate from execution-provider access.
 - Define the common router payload/output and preference semantics. Keep configuration to quality/cost 1–5 and necessary constraints.
 - Support both conversation-start and subagent-start selection, apply automatically, pin the chosen model for the task and preserve each subagent's intended tools/instructions.
@@ -21,7 +21,7 @@ Completion evidence: demonstrate both paths using actual outgoing model/provider
 - Establish the default-model bootstrap before conversation selection, first-install behavior, stale-data limit and refresh deadline.
 - Freeze a versioned evidence schema shared by teacher and future student; mark unknown data explicitly. Resolve source-specific use/capture boundaries before adding content to training exports.
 
-Completion evidence: fresh-cache selections do not call Tavily; expiry triggers a refresh; failed refreshes preserve the previous valid snapshot and expose staleness. Teacher receives only the assembled router payload, without hidden research access.
+Completion evidence: fresh-cache selections do not call Tavily; expiry triggers a refresh; failed refreshes preserve the previous valid snapshot and expose staleness. Teacher receives the assembled router payload and may also research with web search; Laya receives only the payload.
 
 ## 3. Stabilise labels and explicitly enabled capture
 
@@ -31,11 +31,13 @@ Enable training recording only through explicit configuration. Define deletion/r
 
 ## 4. Train and replace the teacher with Laya
 
+First, check that Laya can be fine-tuned on the available training machine: a Windows laptop with an NVIDIA RTX 4060 (8 GB VRAM) and 16 GB RAM. Run a short trial fine-tune at the intended sequence length and batch size, and record peak VRAM, RAM and time per epoch. If it does not fit, decide on reduced settings (smaller batch, gradient accumulation, mixed precision, shorter inputs) or other compute before collecting the full dataset.
+
 LLMRouterBench is the selected bulk prompt source for train/validation/test; check source licences and adapt the prompt mix to intended tasks. The old custom 100-task set remains excluded. Plugin examples are a proposed additional source only after their use/splitting is explicitly designed; do not silently override the LLMRouterBench-only bulk-data decision.
 
 Choose input representation and ranking objective; verify Laya versus plain ModernBERT/feature-based baselines as useful comparisons. Hide/randomise model identities, shuffle pools and use counterfactual price examples to discourage snapshot memorisation. Freeze grouped data splits before fitting. No old fixed candidate/price table, training cost or three-day delivery estimate remains authoritative.
 
-Fit calibration against teacher agreement on a separate split after hard masking; assess held-out prompts, datasets and candidates, top-1 agreement and runner-up recall. Exact metrics/thresholds and training compute are still to be set. Benchmark cold/warm local runtime on named hardware before selecting process lifetime, precision, ONNX/PyTorch or a latency target. No daemon/caching abstraction is required without measurements.
+Fit calibration against teacher agreement on a separate split after hard masking; assess held-out prompts, datasets and candidates, top-1 agreement and runner-up recall. Exact metrics/thresholds are still to be set; training compute depends on the feasibility check above. Benchmark cold/warm local runtime on named hardware before selecting process lifetime, precision, ONNX/PyTorch or a latency target. No daemon/caching abstraction is required without measurements.
 
 Replace the teacher implementation behind the same router contract. Pin model and schema versions, refuse incompatible payloads, and retain the accepted native fallback. Publish weights/model card and eligible data only after provenance checks.
 
@@ -65,15 +67,15 @@ Measure completed-task quality, total conversation/subagent cost and latency aga
 
 The product direction is settled; these are not all answered yet:
 
-1. Local Codex connection and exact model ID/revision; current Pi hooks and subagent mechanism.
+1. Codex-subscription Pi session setup for the Astra teacher and exact model ID/revision; current Pi hooks and subagent mechanism.
 2. Router/evidence schemas, full rankings versus scores, alternatives count, preference wording and missing-evidence behavior.
 3. Specific AA/Vals fields and versions, capability mapping, evidence refresh deadline, maximum stale age and empty-cache handling. Source-use/training/publication eligibility is unresolved.
 4. Teacher-stage confidence target and eventual calibration method/thresholds. No invented calibrated score in the meantime.
 5. Teacher prompt, independent collection strategy, pilot/usage cap, dataset capture exclusions/retention and dataset split policy.
-6. Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
+6. Whether Laya fine-tuning fits the 8 GB RTX 4060 laptop; Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
 
 ## Historical evidence and housekeeping
 
-Prior Day 0 documents reported candidate data for OpenRouter, Token Factory and Baseten, a 100-task set, and rules/prompted baselines. The rules baseline reportedly scored 23/100 against hand labels and the prompted Qwen teacher matched its picks on 20 tasks; these are historical reports, not validation of the selected Sol router. Referenced VPS candidate JSONs, baseline code and prompts are absent from this checkout. Recover them only if useful; do not treat them as shipped implementation.
+Prior Day 0 documents reported candidate data for OpenRouter, Token Factory and Baseten, a 100-task set, and rules/prompted baselines. The rules baseline reportedly scored 23/100 against hand labels and the prompted Qwen teacher matched its picks on 20 tasks; these are historical reports, not validation of the selected Astra teacher. Referenced VPS candidate JSONs, baseline code and prompts are absent from this checkout. Recover them only if useful; do not treat them as shipped implementation.
 
 Old review documents and rendered diagrams were removed from the working tree because they describe superseded architectures. Git history preserves them. Permission-enquiry drafts were not sent and no longer need to be primary documentation; provider/source findings needed for implementation are retained in DESIGN.

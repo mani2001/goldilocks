@@ -7,7 +7,7 @@ Updated 2026-11-16. Read [the product scope](../README.md) first. This document 
 1. Pi receives an opening user prompt or parent-authored subagent instructions.
 2. Plugin code checks the shared evidence cache. When refresh is needed, the execution/parent model follows the Tavily gathering skill. Conversation start needs a bootstrap/default execution model for this step; verify the Pi mechanism during implementation.
 3. Build a versioned router payload containing the initial task, preferences, hard constraints and eligible candidate evidence.
-4. Invoke the router: initially Sol through the local Codex API; later Laya. Sol has no additional context or tools.
+4. Invoke the router: initially GPT-6 Astra at high reasoning effort in Pi coding-agent sessions on the user's Codex subscription, with web search for its own research; later Laya, which gets only the payload.
 5. Validate candidate identifiers and hard constraints in code. Assemble provider/pricing/latency metadata from the evidence, rather than predicting it.
 6. Apply the selected model automatically. Show the choice and alternatives. Keep the choice fixed across later turns, tool calls and compaction.
 7. Record decision metadata locally. If explicitly enabled, record separately permitted training examples.
