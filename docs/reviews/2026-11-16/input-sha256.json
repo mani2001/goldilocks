@@ -1,0 +1,19 @@
+{
+  "PLAN.md": "23767bca8e314075993e093af42243fb371626eac98e42c2c8e3b2228e543d71",
+  "README.md": "53405064e87d1fd16aed304b6cbcff337da54acf0fdf3e770a833338e095f77b",
+  "concepts_brief.md": "862ac0249c2665d84dd5bac74ef6501475523b5ede326ac95c93f93d4adf3cfa",
+  "diagrams/c4-component-engine.png": "f56c2a80ceb064c2557e1d22f3911fbfd24c359b58f27a0fc3bc36f3ca722f15",
+  "diagrams/c4-container-runtime.png": "2c99bbfaa3590f84d48af47d3ed47893036a16a5dd45c7a2aec57bde95c3c618",
+  "diagrams/c4-container-training.png": "299edc881f834882fcb1eaa54d44a1f6257c737f02dda78acd1711bcc10096eb",
+  "diagrams/c4-context-runtime.png": "f479c991fe8c80dd9b63a897f14196c061254e392e92bcde11064adada9b69cd",
+  "diagrams/c4-context-training.png": "5ac2feeccf50597684e0d428956d2a051590d0bbeddf598b346f1fa8d4547afa",
+  "diagrams/c4-dynamic-conversation.png": "0373aa20ca56b9cf4c6c4067f20b1499d13f95eb06ba5d345cbf99e81b86e95b",
+  "diagrams/c4-dynamic-spawn.png": "da3c93dc5027b8f3d1e71b9251dd0c1372b69d57e4c59cb29e06219743b4e303",
+  "diagrams/src/c4-component-engine.mmd": "c8f50a77c8c82e5044e75abe606382f938a8f218025a496f0a4f42b2459ecc25",
+  "diagrams/src/c4-container-runtime.mmd": "c025c23a1c90d6a2d27164d82d5411e1df947e2c7e0b789dfa3a037d61854002",
+  "diagrams/src/c4-container-training.mmd": "44ae5f522dd48c32391bf56ef9060176fc02352379eadd449706ecd33a75a928",
+  "diagrams/src/c4-context-runtime.mmd": "22fb3c89b619ae79ea5d3ac9ccfacd77a9496114f0da1ffc835eac221a29ac55",
+  "diagrams/src/c4-context-training.mmd": "04d8f0a9b776a5e7ffd3698381ff5986701447ea64d34afcad9edcc6f8d3ec36",
+  "diagrams/src/c4-dynamic-conversation.mmd": "0286fb1a5051a41b5a9233a0cbd3091569005eb2d6d3874c185a026429f2ad72",
+  "diagrams/src/c4-dynamic-spawn.mmd": "c55b9e10494b91b2a9ecaef99e6a6822806c44b51a889ef600188915436c6c84"
+}

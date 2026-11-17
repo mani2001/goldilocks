@@ -230,6 +230,26 @@ Structured by construction. The model's outputs are probabilities and scores; th
 - **Restricted-availability scenarios** — does the router handle the user not having access to the best model?
 - **Cost per task** — Anirudh's metric, measured end-to-end (tokens × price + retries + failure cost).
 
+### 6.4 Price-variation test (added 2026-11-16; required before release)
+
+**Question:** when prices change, does the learned ranker adapt appropriately, or does it repeat choices memorised from the training snapshot? Compare learned price trade-offs with code-based scoring; this test does not assume either approach is superior. The current product scope is defined in [`concepts_brief.md`](concepts_brief.md).
+
+**Controlled setup:** use held-out opening prompts and subagent instructions. For each task, freeze capability, latency, availability, context limits, user constraints and token-use estimates. Change only input/output prices, recompute every price-derived cost feature, and request a fresh choice from the frozen student and the named frontier teacher. Do not retrain or recalibrate between price variants. Each variant represents a separate conversation/task start, not reselection during an existing conversation.
+
+| Scenario | What to test |
+|---|---|
+| Price increases and discounts | Sweep one candidate through cheaper and more expensive prices, including cases where its value ordering crosses a competitor's. Include small changes where the appropriate choice stays the same. |
+| Input vs output prices | Vary each separately as well as together; cover input-heavy and output-heavy tasks using fixed token estimates. |
+| Provider price reversal | Hold model capability and non-price provider attributes equal; reverse which eligible provider is cheaper. Test the final model-plus-provider choice, even if provider selection is done in code. |
+| Price dominance control | Give two eligible options identical non-price features and strictly different estimated task costs. The higher-cost option must not win; handle equal-cost ties consistently. |
+| Unseen candidates and providers | Run a separate generalisation slice with held-out candidate/provider identities and pools, then repeat the price sweeps. Report it separately so pool changes do not confound the price-only test. |
+
+**Prevent leakage:** keep all variants of a base prompt in the same data split. Reserve test price ranges and candidate combinations that were not used for training or tuning. Freeze the test cases, teacher version/prompt, tie policy and acceptance thresholds before the final run. Record teacher ambiguity instead of silently treating an unstable label as ground truth.
+
+**Comparisons and metrics:** evaluate the learned ranker, the frontier teacher and a code-based scorer using the same candidate information, constraints and fixed cost formula. Report top-1 agreement separately for cases where the teacher changes its pick and where it keeps its pick; report price-dominance violations, hard-constraint violations and selection latency. On cases with measured outcomes, also report quality and repriced total task cost. Teacher agreement alone does not establish product value, and a lower price need not change the winner when capability differences justify the original choice.
+
+**Acceptance:** zero hard-constraint violations and zero higher-cost selections in the controlled dominance cases. Numerical targets for teacher agreement, product quality/cost and latency remain to be set before final testing; until then, the gate is incomplete. If code-based scoring performs better, investigate the learned price representation, labels or hybrid design. Choosing to move price handling into code requires evidence from this comparison, not an assumption that learned ranking cannot handle changing prices.
+
 ---
 
 ## 7. Training plan

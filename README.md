@@ -1,5 +1,7 @@
 # Goldilocks
 
+**Design status:** The current [concept brief](docs/concepts_brief.md) supersedes conflicting design statements here. [PLAN §6.4](docs/PLAN.md#64-price-variation-test-added-2026-11-16-required-before-release) remains the required price-variation plan.
+
 A decision model that picks the right AI model for the task.
 
 Every task has a model that's just right: capable enough to do the job well,
