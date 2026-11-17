@@ -33,6 +33,7 @@ These documents are the current source of truth:
 2. **[Design](docs/DESIGN.md):** routing flow, evidence, boundaries and operational behavior.
 3. **[Plan](docs/PLAN.md):** delivery stages, validation and remaining decisions.
 4. **[Decisions](.agent/learning/decisions.yml):** the numbered ledger of approved decisions. A newer entry supersedes the older one it names.
+5. **[Rules](.agent/rules.yml):** working rules for agents, each citing the decision that approved it. Proposed rules wait in [candidates](.agent/learning/candidates.yml) until approved.
 
 For coding agents: read [AGENTS.md](AGENTS.md) (also linked as `CLAUDE.md`) for the preferred skills, how to record decisions and the git workflow. Changes go through pull requests using [the PR template](.github/pull_request_template.md); nobody pushes directly to `main`.
 

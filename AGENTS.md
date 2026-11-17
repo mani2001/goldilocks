@@ -22,6 +22,18 @@ How to record:
 - When a decision replaces an earlier one, add a new entry that names the old id, and add "Superseded by DECISION-NNN." to the old entry's `decision` text.
 - Update `README.md`, `docs/DESIGN.md` or `docs/PLAN.md` in the same change so the docs and the ledger agree.
 
+## Learning loop
+
+`.agent/rules.yml` is the registry of working rules. Each rule cites the approved decision it came from. Follow the rules there.
+
+After a meaningful task, review it: did the user correct you, did something break, or did you repeat a mistake a rule would have prevented? If so, propose a rule:
+
+1. Add `CANDIDATE-NNN` to `.agent/learning/candidates.yml` with `status: NEEDS_DECISION`, `proposed_rule`, `evidence` (a list of what happened), `reason`, `affected_files`, `originating_task`, `confidence` (HIGH, MEDIUM or LOW), `suggested_enforcement`, `explicit_user_feedback` and `conflicts`.
+2. Tell the user about the candidate. Do not act on it as a rule yet.
+3. When the user decides, set the candidate's status to `ADOPT`, `ADAPT`, `REJECT` or `NOT_APPLICABLE` and add `decision_id`. For ADOPT or ADAPT, record the decision and add the rule to `.agent/rules.yml`.
+
+Only explicit user approval turns a candidate into a rule. Agent preference, repetition or recency is never approval.
+
 ## Preferred skills
 
 Use these skills when the task fits. They are installed per machine, not in this repository. If a skill is missing, tell the user and give the install command; do not install it without approval.

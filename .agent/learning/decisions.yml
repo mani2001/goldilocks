@@ -407,3 +407,17 @@ decisions:
   evidence: README.md, docs/DESIGN.md and docs/PLAN.md edited on 2026-11-17.
   originating_task: 2026-11-17 teacher and training-hardware revision
   explicit_user_feedback: true
+
+- id: DECISION-034
+  status: APPROVED
+  selection: "add the l;earing loop as well to this pr"
+  topic: Learning loop
+  decision: >-
+    Adopt a candidates, decisions and rules learning loop. After meaningful tasks agents propose rules as CANDIDATE-NNN in
+    .agent/learning/candidates.yml; the user approves or rejects them; approvals are recorded as decisions and the
+    resulting rules live in .agent/rules.yml, each citing its decision. Seed the registry with the working rules
+    from DECISION-032.
+  source: USER_DECISION
+  evidence: .agent/learning/candidates.yml, .agent/rules.yml and AGENTS.md created or edited on 2026-11-17.
+  originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
