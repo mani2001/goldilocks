@@ -19,7 +19,9 @@ How to record:
 
 - Use the next number, `DECISION-NNN`. Never renumber or delete entries.
 - Quote the user's words in `selection`, set `explicit_user_feedback: true`, and cite the commit or files in `evidence`.
-- When a decision replaces an earlier one, add a new entry that names the old id, and add "Superseded by DECISION-NNN." to the old entry's `decision` text.
+- When a decision replaces an earlier one, add a new entry that names the old id. On the old entry set `status: SUPERSEDED`, add `superseded_by: DECISION-NNN`, and add "Superseded by DECISION-NNN." to its `decision` text.
+- When a decision changes only part of an earlier one, the old entry stays `APPROVED`; add `amended_by: DECISION-NNN` to it. Read the two together.
+- Only entries with `status: APPROVED` are in force.
 - Update `README.md`, `docs/DESIGN.md` or `docs/PLAN.md` in the same change so the docs and the ledger agree.
 
 ## Learning loop

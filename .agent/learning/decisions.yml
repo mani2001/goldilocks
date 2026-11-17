@@ -37,7 +37,8 @@ decisions:
   explicit_user_feedback: false
 
 - id: DECISION-004
-  status: APPROVED
+  status: SUPERSEDED
+  superseded_by: DECISION-029
   selection: Recorded in README.md
   topic: Teacher model
   decision: >-
@@ -49,7 +50,8 @@ decisions:
   explicit_user_feedback: false
 
 - id: DECISION-005
-  status: APPROVED
+  status: SUPERSEDED
+  superseded_by: DECISION-030
   selection: Recorded in README.md
   topic: Teacher and student input
   decision: >-
@@ -317,7 +319,8 @@ decisions:
   explicit_user_feedback: false
 
 - id: DECISION-027
-  status: APPROVED
+  status: SUPERSEDED
+  superseded_by: DECISION-032
   selection: Recorded in README.md
   topic: Source of truth
   decision: >-
@@ -342,6 +345,7 @@ decisions:
 
 - id: DECISION-029
   status: APPROVED
+  amended_by: DECISION-033
   selection: >-
     "this is with my codex subscription using gpt 6 astra by opening multiple pi coding agent sessions and allowing
     it web search access so that it can do reserach"
@@ -419,5 +423,18 @@ decisions:
     from DECISION-032.
   source: USER_DECISION
   evidence: .agent/learning/candidates.yml, .agent/rules.yml and AGENTS.md created or edited on 2026-11-17.
+  originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
+
+- id: DECISION-035
+  status: APPROVED
+  selection: "why arent the current decisions such as d4 ? show that they are superseded ?"
+  topic: Marking superseded and amended decisions
+  decision: >-
+    A replaced decision gets status SUPERSEDED and a superseded_by field naming the new decision. A partly changed
+    decision keeps status APPROVED and gets an amended_by field. Entries are never deleted or renumbered. This
+    extends the original ledger schema, which only used status APPROVED.
+  source: USER_DECISION
+  evidence: DECISION-004, 005 and 027 marked SUPERSEDED and DECISION-029 marked amended_by on 2026-11-17.
   originating_task: 2026-11-17 agent instructions and PR workflow
   explicit_user_feedback: true
