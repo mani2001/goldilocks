@@ -1,77 +1,36 @@
 # Goldilocks
 
-**Design status:** The current [concept brief](docs/concepts_brief.md) supersedes conflicting design statements here. [PLAN §6.4](docs/PLAN.md#64-price-variation-test-added-2026-11-16-required-before-release) remains the required price-variation plan.
+Goldilocks selects the model for a conversation or subagent task from the opening instructions, available models and user preferences. It applies the pick automatically and keeps that model for the rest of the conversation or task.
 
-A decision model that picks the right AI model for the task.
+## Current direction
 
-Every task has a model that's just right: capable enough to do the job well,
-cheap enough not to waste money, fast enough to meet the deadline. Picking it
-is a real decision with real stakes — quality, cost, latency, context,
-modality — and today it's made by gut feel, stale benchmark tables, or
-heuristics that route off prompt length.
+- **First harness:** Pi, supporting both conversation starts and subagent starts.
+- **Build inside out:** make the plugin work with the teacher as its router, then replace the teacher with a local decision model behind the same interface.
+- **Teacher:** GPT-6.1 Sol through the user's local Codex API, at **high** reasoning effort. The exact connection must be verified during implementation.
+- **Execution models:** Nebius Token Factory, using the user's API key and available catalogue.
+- **Decision model:** fine-tuned Laya (`convaiinnovations/laya-typed-decisions`), an encoder-based model that ranks candidates rather than generating answers.
+- **Preferences:** quality and cost, each rated 1–5; keep configuration small.
+- **Evidence:** the execution/parent model follows a skill to gather AA/Vals information through Tavily. Share a local cache across selections and refresh daily by default.
+- **Output:** pick, alternatives, confidence with an accurate calibration status, provider, input/output token prices and latency where known.
 
-Goldilocks makes that decision properly: a learned ranking head over a live
-feature store, with reasons for every pick.
+## Router versus execution model
 
-## How it works
+The router receives a defined selection payload. Sol and the eventual Laya model must receive exactly the same information: no extra teacher browsing, repository access, hidden history or tools.
 
-**Input.** The task in plain words, plus constraints: max budget, latency
-bar, quality floor, context needed, modality, open-weights-only, residency.
+The selected execution model is separate. It gets the normal Pi task context, repository access and tools. The initial/default execution model may gather evidence before selection when the cache needs refreshing; the router does not perform that research itself.
 
-**Feature store.** Two signals, kept current:
+## MVP acceptance
 
-- *Benchmarks* — Artificial Analysis, SWE-bench, LiveCodeBench, and others,
-  mapped through a capability layer into six fixed dimensions (reasoning,
-  coding, writing, vision, tools, knowledge) on a 0–5 scale. A new benchmark
-  is a config update, never a retrain.
-- *Live web evidence* — Tavily search, refreshed daily and on new-model
-  detection: launches, price changes, real-world reports, deprecations.
-  Benchmarks alone go stale; search alone is noise. Together they're current
-  and comparable.
+For the first decision-model MVP, copying the teacher is sufficient. The numerical agreement threshold remains to be set. Product-outcome evaluation, full-conversation suitability and feedback-driven improvements come later.
 
-**Decision model.** A ModernBERT-class encoder turns the task and
-constraints into an embedding. A ranking head scores every (task, candidate)
-pair in a single forward pass — no tokens generated for the decision.
-Candidates are model + provider pairs: the same model on two providers can
-differ 15x in price. Hard constraints (availability, context, modality,
-open weights, residency) are pre-filters, applied before ranking. Soft
-trade-offs — how much quality headroom is worth the price — are the head's
-job.
+Goldilocks selections and alternatives must satisfy hard constraints. If the router fails, Pi continues with its normal default as-is; that accepted fallback is not guaranteed to satisfy Goldilocks constraints. An empty eligible pool returns no selection rather than invoking that fallback.
 
-**Output.** A ranked list of candidates, one pick, reasons assembled from
-feature deltas (not generated), and the unconstrained pick when the best
-model isn't available to the user. Cost per task, not just cost per token.
+## Documentation
 
-## Why this is different
+These three documents are the current source of truth:
 
-Existing routers fall into three traps: stale model data (hardcoded
-benchmark tables), heuristic complexity (prompt length as a proxy for
-difficulty), and silent misroutes (a cheap model plausibly wrong, 200 OK).
-None of them learn from real outcomes, none treat constraints as first-class
-ranking inputs, and none use live web evidence as a routing signal.
-Goldilocks is built around all three gaps.
+1. **README.md:** product scope and settled decisions.
+2. **[Design](docs/DESIGN.md):** routing flow, evidence, boundaries and operational behavior.
+3. **[Plan](docs/PLAN.md):** delivery stages, validation and remaining decisions.
 
-## Evaluation
-
-- **Custom task set** — 100 constraint-aware tasks across 32 domains, split
-  50/50 dev/test, each with success criteria for scoring real outputs.
-- **LLMRouterBench slice** — a held-out slice of the 391k-record benchmark
-  as the method eval (a separate, citable number).
-- **Rules-engine baseline** — filter + sort by value. The head must beat it,
-  and beat it where rules can't: the recall cases and the trade-off cases.
-
-## Status
-
-Day 0 complete: candidate data across three providers (OpenRouter, Nebius
-Token Factory, Baseten), the 100-task eval set, and both baselines. The
-rules engine scores 23/100 against hand-judged expected picks — the gap is
-a feature gap, not a model gap, which is what Day 1 (teacher labelling)
-addresses.
-
-## Roadmap
-
-- Day 1: teacher labelling (~1–2k tasks)
-- Day 2: train the ranker (pretrained encoder, small ranking head)
-- Day 3: ship — HuggingFace weights + dataset + model card, MCP server
-  (`pick_model`) + CLI, demo Space
-- Longer term: outcome learning from real picks — the moat no other router has
+Status: planning; no runnable plugin, teacher collection or trained decision model is included yet. Earlier plans, reviews, diagrams and research drafts are preserved in Git history, not maintained as competing specifications. No model-quality, cost-saving or latency claims have been validated.
