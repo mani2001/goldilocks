@@ -11,7 +11,7 @@ This file is for coding agents (Claude Code, Codex, Pi and others) working in th
 
 ## Recording decisions
 
-Add an entry to `.agent/learning/decisions.yml` when the user explicitly approves something that changes scope, design, the plan, a tool or model choice, or a working rule. This includes choosing between options you offered and correcting an earlier decision.
+Add an entry to `.agent/learning/decisions.yml` when the user explicitly states or approves something that changes scope, design, the plan, a tool or model choice, or a working rule. This includes choosing between options you offered, correcting an earlier decision, and stating a working rule. A decision is in force at once; it does not go through a candidate. If it is a working rule, also add it to `.agent/rules.yml` citing the decision.
 
 Do not add an entry for routine edits, your own proposals the user has not approved, or questions that are still open (those belong in `docs/PLAN.md`).
 
@@ -22,17 +22,17 @@ How to record:
 - When a decision replaces an earlier one, add a new entry that names the old id. On the old entry set `status: SUPERSEDED`, add `superseded_by: DECISION-NNN`, and add "Superseded by DECISION-NNN." to its `decision` text.
 - When a decision changes only part of an earlier one, the old entry stays `APPROVED`; add `amended_by: DECISION-NNN` to it. Read the two together.
 - Only entries with `status: APPROVED` are in force.
-- Update `README.md`, `docs/DESIGN.md` or `docs/PLAN.md` in the same change so the docs and the ledger agree.
+- If the decision changes what `README.md`, `docs/DESIGN.md` or `docs/PLAN.md` say, update them in the same change so the docs and the ledger agree.
 
 ## Learning loop
 
 `.agent/rules.yml` is the registry of working rules. Each rule cites the approved decision it came from. Follow the rules there.
 
-After a meaningful task, review it: did the user correct you, did something break, or did you repeat a mistake a rule would have prevented? If so, propose a rule:
+Candidates are for rules you infer, not rules the user states (those are decisions, above). After a meaningful task, review it: did the user correct a specific output, did something break, did you repeat a mistake, or did you see a code smell, where a rule the user has not stated would have helped? If so, propose a rule:
 
 1. Add `CANDIDATE-NNN` to `.agent/learning/candidates.yml` with `status: NEEDS_DECISION`, `proposed_rule`, `evidence` (a list of what happened), `reason`, `affected_files`, `originating_task`, `confidence` (HIGH, MEDIUM or LOW), `suggested_enforcement`, `explicit_user_feedback` and `conflicts`.
 2. Tell the user about the candidate. Do not act on it as a rule yet.
-3. When the user decides, set the candidate's status to `ADOPT`, `ADAPT`, `REJECT` or `NOT_APPLICABLE` and add `decision_id`. For ADOPT or ADAPT, record the decision and add the rule to `.agent/rules.yml`.
+3. When the user decides, record a decision as above, then set the candidate's status to `ADOPT`, `ADAPT`, `REJECT` or `NOT_APPLICABLE` and add `decision_id`. For ADOPT or ADAPT, add the rule to `.agent/rules.yml` citing the decision.
 
 Only explicit user approval turns a candidate into a rule. Agent preference, repetition or recency is never approval.
 

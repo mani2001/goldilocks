@@ -40,11 +40,11 @@ rules:
   strength: MUST
   scope: Scope, design, plan, tool or model choices and working rules
   rule: >-
-    When the user explicitly approves such a change, add the next DECISION-NNN to .agent/learning/decisions.yml
-    and update README.md, docs/DESIGN.md or docs/PLAN.md in the same change. A decision is also how a candidate is
-    resolved: when the user decides on a CANDIDATE-NNN (see AGENT-004), record the decision, set the candidate status
-    and decision_id, and for ADOPT or ADAPT add the rule to .agent/rules.yml citing that decision. Mark replaced
-    decisions SUPERSEDED with superseded_by, and partly changed ones with amended_by.
+    When the user explicitly states or approves such a change, add the next DECISION-NNN to
+    .agent/learning/decisions.yml. It is in force at once; no candidate is needed. If it is a working rule, also add
+    it to .agent/rules.yml citing the decision. If it changes what README.md, docs/DESIGN.md or docs/PLAN.md say,
+    update them in the same change. Mark replaced decisions SUPERSEDED with superseded_by, and partly changed ones
+    with amended_by. Resolving a candidate (AGENT-004) also uses this rule.
   rationale: Keeps one traceable history of what was decided and why.
   source:
     type: USER_DECISION
@@ -57,18 +57,19 @@ rules:
   documentation: AGENTS.md
 
 - id: AGENT-004
-  title: Propose rules only through candidates
+  title: Agent-inferred rules go through candidates
   strength: MUST
-  scope: Agent-proposed rules and guidance
+  scope: Rules an agent infers that the user has not stated
   rule: >-
-    After a meaningful task, review it for a lesson a rule would capture: a user correction, a breakage, a repeated
-    mistake, or a code smell. If found, add CANDIDATE-NNN to .agent/learning/candidates.yml with status
-    NEEDS_DECISION, proposed_rule (the rule as it would read), evidence (a nonempty list of what happened), reason
-    (why the rule helps), affected_files, originating_task, confidence (HIGH, MEDIUM or LOW), suggested_enforcement
-    (a check, test, lint or review), explicit_user_feedback (true if the user said it) and conflicts (rule ids it
-    contradicts, or an empty list). Tell the user about it and do not follow it as a rule yet. Only explicit user
-    approval, recorded as a decision (AGENT-003), promotes a candidate into this registry. Routine work, one-off
-    preferences and open plan questions are not candidates.
+    After a meaningful task, review it for a lesson the user has not stated as a rule: a correction to a specific
+    output, a breakage, a repeated mistake, or a code smell. If found, add CANDIDATE-NNN to
+    .agent/learning/candidates.yml with status NEEDS_DECISION, proposed_rule (the rule as it would read), evidence
+    (a nonempty list of what happened), reason (why the rule helps), affected_files, originating_task, confidence
+    (HIGH, MEDIUM or LOW), suggested_enforcement (a check, test, lint or review), explicit_user_feedback (true if it
+    comes from something the user said) and conflicts (rule ids it contradicts, or an empty list). Tell the user and
+    do not follow it as a rule yet. When the user decides, record a decision under AGENT-003, then set the candidate
+    status (ADOPT, ADAPT, REJECT or NOT_APPLICABLE) and decision_id. If the user states the rule directly, skip the
+    candidate and use AGENT-003. Routine work, one-off preferences and open plan questions are not candidates.
   rationale: Prevents agent preference or repetition from becoming policy.
   source:
     type: USER_DECISION
