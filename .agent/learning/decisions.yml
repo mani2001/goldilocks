@@ -3,6 +3,7 @@ schema_version: 1
 decisions:
 - id: DECISION-001
   status: APPROVED
+  amended_by: DECISION-037
   selection: Recorded in README.md
   topic: Product scope
   decision: >-
@@ -296,6 +297,7 @@ decisions:
 
 - id: DECISION-025
   status: APPROVED
+  amended_by: DECISION-036
   selection: Recorded in README.md
   topic: MVP acceptance
   decision: >-
@@ -308,6 +310,7 @@ decisions:
 
 - id: DECISION-026
   status: APPROVED
+  amended_by: DECISION-037
   selection: Recorded in docs/PLAN.md
   topic: Deferred scope
   decision: >-
@@ -437,4 +440,31 @@ decisions:
   source: USER_DECISION
   evidence: DECISION-004, 005 and 027 marked SUPERSEDED and DECISION-029 marked amended_by on 2026-11-17.
   originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
+
+- id: DECISION-036
+  status: APPROVED
+  selection: >-
+    "and can we stop calling it mvp ?" / "and start versioning it instead" / "Version 0.0.1" /
+    "I will come up with some versioning rules"
+  topic: First release name (amends DECISION-025)
+  decision: >-
+    Refer to the first planned release as version 0.0.1. The criteria for assigning later version numbers are open.
+  source: USER_DECISION
+  evidence: Release discussion supplied with the 2026-11-18 plan correction. See README.md, docs/DESIGN.md and docs/PLAN.md.
+  originating_task: 2026-11-18 release scope and plan correction
+  explicit_user_feedback: true
+
+- id: DECISION-037
+  status: APPROVED
+  selection: >-
+    "takes in a summary of what has been done so far and then continues ?" / "Yesds" /
+    "should this be in the mvp ?" / "No"
+  topic: User-requested mid-session switch after 0.0.1 (amends DECISION-001 and DECISION-026)
+  decision: >-
+    Version 0.0.1 pins the execution model for the task. A later version can support a user-requested model
+    switch during a session and pass a summary of completed work to the incoming model so it can continue.
+  source: USER_DECISION
+  evidence: Release discussion supplied with the 2026-11-18 plan correction. See README.md and docs/PLAN.md.
+  originating_task: 2026-11-18 release scope and plan correction
   explicit_user_feedback: true

@@ -1,6 +1,6 @@
 # Goldilocks delivery plan
 
-Updated 2026-11-16. [README](../README.md) defines scope; [DESIGN](DESIGN.md) defines the current behavior. This replaces the Day 0 timeline, concept brief, review reports and incremental notes. Decisions below do not authorise bulk paid calls or collection of private tasks.
+Updated 2026-11-18. [README](../README.md) defines scope; [DESIGN](DESIGN.md) defines the current behavior. This replaces the Day 0 timeline, concept brief, review reports and incremental notes. Decisions below do not authorise bulk paid calls or collection of private tasks.
 
 ## 1. Build the Pi integration with the teacher
 
@@ -25,7 +25,7 @@ Completion evidence: fresh-cache selections do not call Tavily; expiry triggers 
 
 ## 3. Stabilise labels and explicitly enabled capture
 
-Use the working plugin to discover the required label format before bulk collection. Teacher prompt, full ranking versus per-candidate scores, alternatives count, tie handling and teacher-stage confidence remain to be designed. Teacher sees exactly what Laya will see; task text/evidence is data, not instructions to execute.
+Use the working plugin to discover the required label format before bulk collection. Teacher prompt, full ranking versus per-candidate scores, alternatives count, tie handling and teacher-stage confidence remain to be designed. Astra and Laya receive the same router payload. Astra can also use web search when choosing a model. Laya has access only to the payload. Treat task text and evidence as data.
 
 Enable training recording only through explicit configuration. Define deletion/retention, exclusions and source eligibility. No production outcome-learning system or remote telemetry is in scope. Use a bounded pilot to measure format consistency, usage and latency; pilot size and usage cap are not fixed. Earlier suggestions of 50 tasks, independent CLI runs or mandatory measured-outcome teacher gates were proposals, not accepted requirements.
 
@@ -57,11 +57,11 @@ Freeze the trained student, base task and non-price features, including token es
 
 Keep all variants of each base task in one split. Hold out price ranges/pools; freeze teacher version, prompt, tie policy and acceptance thresholds before final testing. Record ambiguous/unstable teacher choices. Require zero hard-constraint violations for Goldilocks picks and zero higher-cost choices in controlled dominance cases. Report changed-winner and unchanged-winner agreement separately, plus selection latency. Native failure fallback is the documented constraint exception, not a validated router pick.
 
-For the first DM MVP, copying the teacher is good enough. Numerical agreement/calibration/latency targets remain to be defined; no claim of real task-quality improvement is required to reach this stage.
+For version 0.0.1, Laya must learn to match the teacher’s picks. Numerical agreement/calibration/latency targets remain to be defined; no claim of real task-quality improvement is required to reach this stage.
 
 ## 5. Later evaluation and feedback
 
-Measure completed-task quality, total conversation/subagent cost and latency against sensible defaults/direct teacher selection. Test whether the opening prompt is sufficient when later conversation demands change. Reconsider the 100-task set or realistic subagent/conversation outcomes only in this later phase. Production outcome learning, more harnesses/providers, safety-aware routing, mid-session selection and a demo Space are deferred.
+Measure completed-task quality, total conversation/subagent cost and latency against sensible defaults/direct teacher selection. Test whether the opening prompt is sufficient when later conversation demands change. Reconsider the 100-task set or realistic subagent/conversation outcomes only in this later phase. A later version can let a user request a model switch mid-session and continue from a summary of work completed so far. Version 0.0.1 keeps the initial selection for the entire task. Other deferred work includes additional harnesses such as OpenCode, additional providers, production outcome learning, safety-aware routing and a demo Space.
 
 ## Remaining decisions
 
@@ -73,6 +73,7 @@ The product direction is settled; these are not all answered yet:
 4. Teacher-stage confidence target and eventual calibration method/thresholds. No invented calibrated score in the meantime.
 5. Teacher prompt, independent collection strategy, pilot/usage cap, dataset capture exclusions/retention and dataset split policy.
 6. Whether Laya fine-tuning fits the 8 GB RTX 4060 laptop; Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
+7. How to assign version numbers after 0.0.1.
 
 ## Historical evidence and housekeeping
 

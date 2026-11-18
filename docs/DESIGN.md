@@ -1,8 +1,8 @@
 # Goldilocks design
 
-Updated 2026-11-16. Read [the product scope](../README.md) first. This document replaces the former concept brief and incremental decision/research notes.
+Updated 2026-11-18. Read [the product scope](../README.md) first. This document replaces the former concept brief and incremental decision/research notes.
 
-## Selection flow
+## Version 0.0.1 selection flow
 
 1. Pi receives an opening user prompt or parent-authored subagent instructions.
 2. Plugin code checks the shared evidence cache. When refresh is needed, the execution/parent model follows the Tavily gathering skill. Conversation start needs a bootstrap/default execution model for this step; verify the Pi mechanism during implementation.

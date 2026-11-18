@@ -2,6 +2,8 @@
 
 Goldilocks selects the model for a conversation or subagent task from the opening instructions, available models and user preferences. It applies the pick automatically and keeps that model for the rest of the conversation or task.
 
+Version 0.0.1 targets Pi. A later version can support a user-requested model switch during a session, with a summary of completed work for the incoming model.
+
 ## Current direction
 
 - **First harness:** Pi, supporting both conversation starts and subagent starts.
@@ -19,9 +21,9 @@ The router receives a defined selection payload. The teacher (Astra) also has we
 
 The selected execution model is separate. It gets the normal Pi task context, repository access and tools. The initial/default execution model may gather evidence before selection when the cache needs refreshing; Laya does not perform that research; the teacher may do its own.
 
-## MVP acceptance
+## Version 0.0.1 acceptance
 
-For the first decision-model MVP, copying the teacher is sufficient. The numerical agreement threshold remains to be set. Product-outcome evaluation, full-conversation suitability and feedback-driven improvements come later.
+For version 0.0.1, Laya must learn to match the teacher’s picks. The numerical agreement threshold remains to be set. Product-outcome evaluation, full-conversation suitability and feedback-driven improvements come later.
 
 Goldilocks selections and alternatives must satisfy hard constraints. If the router fails, Pi continues with its normal default as-is; that accepted fallback is not guaranteed to satisfy Goldilocks constraints. An empty eligible pool returns no selection rather than invoking that fallback.
 
