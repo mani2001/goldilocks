@@ -444,6 +444,7 @@ decisions:
 
 - id: DECISION-036
   status: APPROVED
+  amended_by: DECISION-038
   selection: >-
     "and can we stop calling it mvp ?" / "and start versioning it instead" / "Version 0.0.1" /
     "I will come up with some versioning rules"
@@ -467,4 +468,19 @@ decisions:
   source: USER_DECISION
   evidence: Release discussion supplied with the 2026-11-18 plan correction. See README.md and docs/PLAN.md.
   originating_task: 2026-11-18 release scope and plan correction
+  explicit_user_feedback: true
+
+- id: DECISION-038
+  status: APPROVED
+  selection: "ok go for it"
+  topic: Product release numbering (amends DECISION-036)
+  decision: >-
+    Use the largest applicable bump. Compatible fixes take a patch and compatible features take a minor.
+    Breaking changes during 0.x take a minor with migration notes. Start 1.0.0 when config and router
+    interfaces carry a backward compatibility commitment. Breaking changes then take a major.
+    Tag release commits after acceptance. Documentation-only fixes need no release.
+    Track the schema and checkpoint separately and judge product bumps by user or integration impact.
+  source: USER_DECISION
+  evidence: Approval of the release numbering proposal for docs/PLAN.md and .agent/rules.yml on 2026-11-18.
+  originating_task: Adopt version numbering for Goldilocks releases
   explicit_user_feedback: true

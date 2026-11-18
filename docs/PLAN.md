@@ -63,6 +63,21 @@ For version 0.0.1, Laya must learn to match the teacher’s picks. Numerical agr
 
 Measure completed-task quality, total conversation/subagent cost and latency against sensible defaults/direct teacher selection. Test whether the opening prompt is sufficient when later conversation demands change. Reconsider the 100-task set or realistic subagent/conversation outcomes only in this later phase. A later version can let a user request a model switch mid-session and continue from a summary of work completed so far. Version 0.0.1 keeps the initial selection for the entire task. Other deferred work includes additional harnesses such as OpenCode, additional providers, production outcome learning, safety-aware routing and a demo Space.
 
+## Release numbering
+
+The first release target is `0.0.1`. For subsequent releases, choose the largest applicable change since the last release. Judge the impact on Pi users and router adapter authors.
+
+| Change | Version bump | Example |
+| --- | --- | --- |
+| Restore documented behavior while preserving compatibility | Patch | Fix a model switch after compaction. |
+| Add a compatible capability | Minor | Let the user switch models mid-session. |
+| Require existing users or adapter authors to change their config or integration during 0.x | Minor, with migration notes | Make a new router input mandatory. |
+| Introduce an incompatible change after reaching 1.0.0 | Major | Remove a supported configuration field. |
+
+Release `1.0.0` when Goldilocks commits to backward compatibility for its configuration and router interface across 1.x minor and patch releases. The release number for mid-session switching depends on when it ships.
+
+Tag the release commit as `vMAJOR.MINOR.PATCH` once it meets its acceptance criteria. Documentation-only corrections do not require a release. Record the router schema version and the Laya checkpoint, when used, for each release. Version them independently. Retraining changes the product version according to its impact on users and integrations.
+
 ## Remaining decisions
 
 The product direction is settled; these are not all answered yet:
@@ -73,7 +88,6 @@ The product direction is settled; these are not all answered yet:
 4. Teacher-stage confidence target and eventual calibration method/thresholds. No invented calibrated score in the meantime.
 5. Teacher prompt, independent collection strategy, pilot/usage cap, dataset capture exclusions/retention and dataset split policy.
 6. Whether Laya fine-tuning fits the 8 GB RTX 4060 laptop; Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
-7. How to assign version numbers after 0.0.1.
 
 ## Historical evidence and housekeeping
 

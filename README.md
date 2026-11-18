@@ -27,6 +27,8 @@ For version 0.0.1, Laya must learn to match the teacher’s picks. The numerical
 
 Goldilocks selections and alternatives must satisfy hard constraints. If the router fails, Pi continues with its normal default as-is; that accepted fallback is not guaranteed to satisfy Goldilocks constraints. An empty eligible pool returns no selection rather than invoking that fallback.
 
+See the [release numbering rules](docs/PLAN.md#release-numbering) for version bumps and release tags.
+
 ## Documentation
 
 These documents are the current source of truth:

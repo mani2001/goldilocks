@@ -80,3 +80,21 @@ rules:
     mechanism: Review that every rule cites an APPROVED decision.
     limitations: None automated.
   documentation: AGENTS.md
+
+- id: AGENT-005
+  title: Select and tag product releases
+  strength: MUST
+  scope: Preparing a Goldilocks release
+  rule: >-
+    Apply the release numbering table in docs/PLAN.md to all changes since the previous release.
+    Use the largest applicable bump and include migration notes for breaking changes during 0.x.
+    Record the schema version and applicable checkpoint separately. Create the release tag after acceptance.
+  rationale: Users and adapter authors can tell what an upgrade requires.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-038"
+  enforcement:
+    status: review-only
+    mechanism: Compare the proposed release number and tag against the changes and acceptance evidence.
+  documentation: docs/PLAN.md#release-numbering
