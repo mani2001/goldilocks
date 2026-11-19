@@ -16,7 +16,7 @@ For a new conversation evidence refresh runs before the first execution-model re
 
 ## Router contract
 
-The implemented schema is `goldilocks-v2` in `src/router.mjs`. It is the teacher/student boundary; eventual Laya input representation still needs design.
+The implemented schema is `goldilocks-v2` in `src/router.ts`. It is the teacher/student boundary; eventual Laya input representation still needs design.
 
 | Input | Meaning |
 | --- | --- |
@@ -26,7 +26,7 @@ The implemented schema is `goldilocks-v2` in `src/router.mjs`. It is the teacher
 | Candidates | Token Factory model IDs, capability evidence, input/output prices, context/modality and latency when known |
 | Provenance | Source, benchmark/configuration version, observation time, snapshot version and missing fields |
 
-Quality is an integer 1–5: 1 = economical/adequate, 3 = balanced, 5 = strongest task capability within the price ceiling. Cost is not a rating. Optional `maxCostPerMillionTokens` is a nonnegative USD ceiling on the fixed 50% uncached input + 50% output catalogue rate. Null means no ceiling. Code removes over-budget or unpriced candidates before ranking; all alternatives satisfy the same ceiling. This is a comparison rate, not a per-task budget or prediction of the actual input/output mix. All persistent settings are commented in `goldilocks.config.mjs`.
+Quality is an integer 1–5: 1 = economical/adequate, 3 = balanced, 5 = strongest task capability within the price ceiling. Cost is not a rating. Optional `maxCostPerMillionTokens` is a nonnegative USD ceiling on the fixed 50% uncached input + 50% output catalogue rate. Null means no ceiling. Code removes over-budget or unpriced candidates before ranking; all alternatives satisfy the same ceiling. This is a comparison rate, not a per-task budget or prediction of the actual input/output mix. All persistent settings are commented in `goldilocks.config.ts`.
 
 Status reports current/selected model price rates with currency/units and sums recorded Token Factory assistant-message usage on the current conversation branch. Historical Pi costs are retained rather than repricing old responses; missing usage stays unknown and catalogue estimates are not labelled invoices. Router and child-session costs are excluded explicitly. The launcher does not force the teacher model on a resumed session.
 
@@ -34,7 +34,7 @@ Output is a pick and ordered alternatives, confidence with its target/calibratio
 
 ## Evidence: Tavily plus a daily local cache
 
-**Current scope:** Token Factory and Artificial Analysis only. The evidence skill defines the retrieval procedure; `src/evidence.mjs` executes fixed Tavily calls in code, avoiding repeated agent tool loops. Use Search to locate sources/updates and Extract for known approved pages. Provider catalogue and price information comes from Token Factory's official sources; verify what its API actually supplies.
+**Current scope:** Token Factory and Artificial Analysis only. The evidence skill defines the retrieval procedure; `src/evidence.ts` executes fixed Tavily calls in code, avoiding repeated agent tool loops. Use Search to locate sources/updates and Extract for known approved pages. Provider catalogue and price information comes from Token Factory's official sources; verify what its API actually supplies.
 
 The cache is local and shared by conversations/subagents. Default TTL is 24 hours. Plugin code checks freshness; it does not depend on the agent remembering the TTL. Reuse the snapshot on ordinary selections. There is no public GitHub benchmark mirror or scheduled central CI data feed in the selected design.
 

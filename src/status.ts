@@ -1,7 +1,23 @@
+import type { chatCandidates } from './router.ts';
+
+interface UsageEntry {
+  type: string;
+  data?: unknown;
+  message?: {
+    role: string;
+    provider?: string;
+    usage?: {
+      input?: number; output?: number; cacheRead?: number; cacheWrite?: number;
+      cost?: { total?: number; totalFromProvider?: boolean };
+    };
+  };
+}
+
 // Pi stores token counts and catalogue-priced costs on each assistant message.
 // Keep that historical pricing rather than repricing earlier responses at today's rates.
-export function executionUsage(entries) {
-  const messages = entries.filter(e => e.type === 'message' && e.message?.role === 'assistant' && e.message?.provider === 'tokenfactory').map(e => e.message);
+export function executionUsage(entries: UsageEntry[]) {
+  const messages = entries.filter(e => e.type === 'message').map(e => e.message)
+    .filter(m => m !== undefined).filter(m => m.role === 'assistant' && m.provider === 'tokenfactory');
   let input = 0, output = 0, cacheRead = 0, cacheWrite = 0, cost = 0, missing = 0;
   let allProviderReported = messages.length > 0;
   for (const message of messages) {
@@ -9,7 +25,7 @@ export function executionUsage(entries) {
     if (!usage) { missing++; allProviderReported = false; continue; }
     input += usage.input || 0; output += usage.output || 0;
     cacheRead += usage.cacheRead || 0; cacheWrite += usage.cacheWrite || 0;
-    if (Number.isFinite(usage.cost?.total) && usage.cost.total >= 0) cost += usage.cost.total;
+    if (typeof usage.cost?.total === 'number' && Number.isFinite(usage.cost.total) && usage.cost.total >= 0) cost += usage.cost.total;
     else missing++;
     if (usage.cost?.totalFromProvider !== true) allProviderReported = false;
   }
@@ -21,7 +37,7 @@ export function executionUsage(entries) {
     missing_usage_records: missing,
   };
 }
-export function modelPricing(model) {
+export function modelPricing(model: Pick<ReturnType<typeof chatCandidates>[number], 'provider' | 'currency' | 'cost_in_per_1m' | 'cost_out_per_1m' | 'cache_read_per_1m' | 'blended_cost_per_1m'> | null | undefined) {
   if (!model) return null;
   return { provider: model.provider, currency: model.currency, unit: 'USD per 1,000,000 tokens',
     input: model.cost_in_per_1m, output: model.cost_out_per_1m, cache_read: model.cache_read_per_1m,

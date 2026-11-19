@@ -1,3 +1,9 @@
+import type { Catalog, CatalogModel, Evidence } from './types.ts';
+
+interface RefreshOptions { force?: boolean; signal?: AbortSignal }
+interface Manifest { urls: string[]; fetched_at: string; at_limit?: boolean }
+interface TavilyPage { url: string; raw_content?: string }
+interface TavilyResponse { results?: TavilyPage[]; failed_results?: unknown[]; request_id?: string }
 import { mkdir, readFile, writeFile, rename, unlink, open, stat } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
 import { join, dirname } from 'node:path';
@@ -8,7 +14,7 @@ export const TF_BASE = 'https://api.tokenfactory.nebius.com/v1';
 export const AA_ROOT = 'https://artificialanalysis.ai/leaderboards/models';
 export const TTL_MS = 24 * 60 * 60 * 1000;
 export const CACHE_DIR = process.env.GOLDILOCKS_CACHE_DIR || join(dirname(fileURLToPath(import.meta.url)), '..', '.cache', 'goldilocks');
-export function isAAUrl(value) {
+export function isAAUrl(value: string) {
   try {
     const u = new URL(value);
     return u.protocol === 'https:' && u.hostname === 'artificialanalysis.ai' && !u.username && !u.password &&
@@ -16,35 +22,35 @@ export function isAAUrl(value) {
        /^\/leaderboards\/[a-z0-9-]+\/?$/.test(u.pathname));
   } catch { return false; }
 }
-export async function readJSON(path) {
+export async function readJSON<T = unknown>(path: string): Promise<T | null> {
   try { return JSON.parse(await readFile(path, 'utf8')); }
-  catch (e) { if (e.code === 'ENOENT') return null; throw new Error(`Invalid local cache: ${path}`, { cause: e }); }
+  catch (e) { if ((e as NodeJS.ErrnoException).code === 'ENOENT') return null; throw new Error(`Invalid local cache: ${path}`, { cause: e }); }
 }
-export async function atomicJSON(path, value) {
+export async function atomicJSON(path: string, value: unknown) {
   const tmp = `${path}.${randomUUID()}.tmp`;
   await mkdir(join(path, '..'), { recursive: true, mode: 0o700 });
   try {
     await writeFile(tmp, JSON.stringify(value, null, 2) + '\n', { mode: 0o600 });
     await rename(tmp, path);
-  } finally { await unlink(tmp).catch(e => { if (e.code !== 'ENOENT') throw e; }); }
+  } finally { await unlink(tmp).catch(e => { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }); }
 }
-export function isFresh(value, now = Date.now(), ttl = TTL_MS) {
-  const age = now - Date.parse(value?.fetched_at);
+export function isFresh(value: { fetched_at?: string } | null, now = Date.now(), ttl = TTL_MS) {
+  const age = now - Date.parse(value?.fetched_at ?? '');
   return Number.isFinite(age) && age >= 0 && age < ttl;
 }
-async function requestJSON(url, options = {}, timeout = 60000) {
+async function requestJSON<T>(url: string, options: RequestInit = {}, timeout = 60000): Promise<T> {
   const response = await fetch(url, { ...options, signal: AbortSignal.any([AbortSignal.timeout(timeout), ...(options.signal ? [options.signal] : [])]) });
   if (!response.ok) throw new Error(`${new URL(url).hostname}: HTTP ${response.status}`);
   return response.json();
 }
-export async function tavily(endpoint, body, signal) {
+export async function tavily(endpoint: string, body: object, signal?: AbortSignal) {
   if (!process.env.TAVILY_API_KEY) throw new Error('TAVILY_API_KEY is not configured');
-  return requestJSON(`https://api.tavily.com/${endpoint}`, {
+  return requestJSON<TavilyResponse>(`https://api.tavily.com/${endpoint}`, {
     method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.TAVILY_API_KEY}` },
     body: JSON.stringify(body), signal,
   }, endpoint === 'crawl' ? 180000 : 75000);
 }
-async function withCacheLock(dir, name, operation, signal) {
+async function withCacheLock<T>(dir: string, name: string, operation: () => Promise<T>, signal?: AbortSignal) {
   await mkdir(dir, { recursive: true, mode: 0o700 });
   const path = join(dir, `${name}.lock`), started = Date.now();
   let handle;
@@ -52,10 +58,10 @@ async function withCacheLock(dir, name, operation, signal) {
     signal?.throwIfAborted();
     try { handle = await open(path, 'wx', 0o600); }
     catch (e) {
-      if (e.code !== 'EEXIST') throw e;
+      if ((e as NodeJS.ErrnoException).code !== 'EEXIST') throw e;
       // Recover an abandoned lock, never a normally bounded refresh.
       try { if (Date.now() - (await stat(path)).mtimeMs > 15 * 60000) await unlink(path); }
-      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
       if (Date.now() - started > 240000) throw new Error('Evidence cache is busy; refresh deadline exceeded');
       await delay(200, undefined, { signal });
     }
@@ -63,15 +69,15 @@ async function withCacheLock(dir, name, operation, signal) {
   try { return await operation(); }
   finally { await handle.close(); await unlink(path); }
 }
-export async function refreshCatalog(dir = CACHE_DIR, options = {}) {
+export async function refreshCatalog(dir = CACHE_DIR, options: RefreshOptions = {}) {
   return withCacheLock(dir, 'catalog', () => updateCatalog(dir, options), options.signal);
 }
-async function updateCatalog(dir, { force = false, signal } = {}) {
+async function updateCatalog(dir: string, { force = false, signal }: RefreshOptions = {}) {
   const path = join(dir, 'catalog.json');
-  const old = await readJSON(path);
-  if (!force && isFresh(old) && old.models?.length) return old;
+  const old = await readJSON<Catalog>(path);
+  if (!force && old && isFresh(old) && old.models?.length) return old;
   if (!process.env.NEBIUS_API_KEY) throw new Error('NEBIUS_API_KEY is not configured');
-  const raw = await requestJSON(`${TF_BASE}/models?verbose=true`, {
+  const raw = await requestJSON<{ data: CatalogModel[] }>(`${TF_BASE}/models?verbose=true`, {
     headers: { Authorization: `Bearer ${process.env.NEBIUS_API_KEY}` }, signal,
   });
   if (!Array.isArray(raw.data) || !raw.data.length) throw new Error('Token Factory returned no models');
@@ -79,14 +85,14 @@ async function updateCatalog(dir, { force = false, signal } = {}) {
   await atomicJSON(path, result);
   return result;
 }
-export function pageRecord(result, time = new Date().toISOString()) {
+export function pageRecord(result: TavilyPage, time = new Date().toISOString()) {
   if (!isAAUrl(result.url) || typeof result.raw_content !== 'string' || result.raw_content.trim().length < 100) return null;
   return { url: result.url, fetched_at: time, content: result.raw_content, sha256: createHash('sha256').update(result.raw_content).digest('hex') };
 }
 // One deliberate discovery crawl. Daily refresh uses the saved URL list, never another crawl.
-export async function discoverAA(dir = CACHE_DIR, { force = false, signal } = {}) {
+export async function discoverAA(dir = CACHE_DIR, { force = false, signal }: RefreshOptions = {}) {
   const manifestPath = join(dir, 'aa-urls.json');
-  const old = await readJSON(manifestPath);
+  const old = await readJSON<Manifest>(manifestPath);
   if (old?.urls?.length && !force) return old;
   const raw = await tavily('crawl', {
     url: AA_ROOT, max_depth: 2, max_breadth: 80, limit: 100,
@@ -94,7 +100,7 @@ export async function discoverAA(dir = CACHE_DIR, { force = false, signal } = {}
     select_paths: ['^/leaderboards/.*', '^/evaluations/.*'],
     allow_external: false, extract_depth: 'advanced', format: 'markdown',
   }, signal);
-  const pages = (raw.results || []).map(x => pageRecord(x)).filter(Boolean);
+  const pages = (raw.results || []).map(x => pageRecord(x)).filter(p => p !== null);
   const urls = [...new Set([AA_ROOT, ...pages.map(p => p.url)])];
   if (!pages.length) throw new Error('AA discovery returned no usable pages; no cache was replaced');
   const result = { schema_version: 1, fetched_at: new Date().toISOString(), urls, crawl_limit: 100, at_limit: (raw.results?.length || 0) >= 100, request_id: raw.request_id };
@@ -103,24 +109,24 @@ export async function discoverAA(dir = CACHE_DIR, { force = false, signal } = {}
   await atomicJSON(manifestPath, result);
   return result;
 }
-export async function extractAA(dir = CACHE_DIR, options = {}) {
+export async function extractAA(dir = CACHE_DIR, options: RefreshOptions = {}) {
   return withCacheLock(dir, 'aa', () => updateAA(dir, options), options.signal);
 }
-async function updateAA(dir, { force = false, signal } = {}) {
-  const old = await readJSON(join(dir, 'aa-pages.json'));
-  const manifest = await readJSON(join(dir, 'aa-urls.json'));
+async function updateAA(dir: string, { force = false, signal }: RefreshOptions = {}) {
+  const old = await readJSON<Evidence>(join(dir, 'aa-pages.json'));
+  const manifest = await readJSON<Manifest>(join(dir, 'aa-urls.json'));
   if (!manifest?.urls?.length) throw new Error('AA cache is empty. Run npm run evidence -- discover first.');
   const urls = manifest.urls;
   if (!urls.every(isAAUrl)) throw new Error('AA URL cache contains a non-allowlisted URL');
   if (!force && old?.pages?.length && isFresh(old) && urls.every(url => old.pages.some(p => p.url === url))) return old;
-  const pages = !force && isFresh(old) ? old.pages.filter(p => urls.includes(p.url)) : [];
+  const pages = !force && old && isFresh(old) ? old.pages.filter(p => urls.includes(p.url)) : [];
   const pending = urls.filter(url => !pages.some(p => p.url === url));
   const failures = [];
   for (let i = 0; i < pending.length; i += 20) {
     const batch = pending.slice(i, i + 20);
     // No query/chunks: retain full extracted page contents.
     const raw = await tavily('extract', { urls: batch, extract_depth: 'advanced', format: 'markdown' }, signal);
-    const extracted = (raw.results || []).map(x => pageRecord(x)).filter(p => p && batch.includes(p.url));
+    const extracted = (raw.results || []).map(x => pageRecord(x)).filter(p => p !== null).filter(p => batch.includes(p.url));
     pages.push(...extracted);
     for (const url of batch) if (!extracted.some(p => p.url === url)) failures.push({ url, reason: 'Extraction missing or invalid' });
   }
@@ -132,14 +138,14 @@ async function updateAA(dir, { force = false, signal } = {}) {
 
 // Crawl sometimes returns only the landing page. Discover linked benchmark pages
 // from AA's directory without repeating the one-time crawl.
-export async function discoverIndexLinks(dir = CACHE_DIR, { signal } = {}) {
+export async function discoverIndexLinks(dir = CACHE_DIR, { signal }: RefreshOptions = {}) {
   const raw = await tavily('extract', {
     urls: ['https://artificialanalysis.ai/indexes', 'https://artificialanalysis.ai/evaluations', 'https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index'],
     extract_depth: 'advanced', format: 'markdown',
   }, signal);
-  const records = (raw.results || []).map(x => pageRecord(x)).filter(Boolean);
+  const records = (raw.results || []).map(x => pageRecord(x)).filter(p => p !== null);
   if (!records.length) throw new Error('AA index directory extraction failed');
-  const manifest = await readJSON(join(dir, 'aa-urls.json'));
+  const manifest = await readJSON<Manifest>(join(dir, 'aa-urls.json'));
   const urls = new Set(manifest?.urls || [AA_ROOT]);
   for (const p of records) {
     urls.add(p.url);

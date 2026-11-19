@@ -1,12 +1,13 @@
+import type { Catalog, Evidence, TeacherInput, Requirements } from '../src/types.ts';
 import { Type } from 'typebox';
-import { createAgentSession, DefaultResourceLoader, getAgentDir, ModelRuntime, SessionManager, SettingsManager, type ExtensionAPI, type ExtensionContext } from '@earendil-works/pi-coding-agent';
+import { createAgentSession, DefaultResourceLoader, getAgentDir, ModelRuntime, SessionManager, SettingsManager, type AgentSession, type ProviderConfig, type ExtensionAPI, type ExtensionContext } from '@earendil-works/pi-coding-agent';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CACHE_DIR, TF_BASE, readJSON, refreshCatalog, extractAA } from '../src/evidence.mjs';
-import { chatCandidates, NoSelection, TEACHER } from '../src/router.mjs';
-import { routeTask, decisionLog } from '../src/service.mjs';
-import { executionUsage, modelPricing } from '../src/status.mjs';
-import defaults from '../goldilocks.config.mjs';
+import { CACHE_DIR, TF_BASE, readJSON, refreshCatalog, extractAA } from '../src/evidence.ts';
+import { chatCandidates, NoSelection, TEACHER } from '../src/router.ts';
+import { routeTask, decisionLog } from '../src/service.ts';
+import { executionUsage, modelPricing } from '../src/status.ts';
+import defaults from '../goldilocks.config.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ENTRY = 'goldilocks-selection';
@@ -14,19 +15,20 @@ const TOOL_NAMES = ['read', 'grep', 'find', 'ls', 'bash', 'edit', 'write'];
 
 export default async function (pi: ExtensionAPI) {
   // Explicitly loaded package config only, not arbitrary working-directory code.
-  try { process.loadEnvFile(join(ROOT, '.env')); } catch (e: any) { if (e.code !== 'ENOENT') throw e; }
+  try { process.loadEnvFile(join(ROOT, '.env')); } catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }
   const config = { ...defaults };
   let done = false;
-  let providerConfig: any;
-  let lastDecision: any;
+  let providerConfig: ProviderConfig | undefined;
+  type Decision = Awaited<ReturnType<typeof routeTask>>;
+  let lastDecision: Decision | undefined;
   let childRunning = false;
 
   function notice(ctx: ExtensionContext, message: string, level: 'info' | 'warning' | 'error' = 'info') {
     if (ctx.hasUI) ctx.ui.notify(message, level);
     else process.stderr.write(`[Goldilocks] ${message}\n`);
   }
-  function register(catalog: any) {
-    const candidates = chatCandidates(catalog).filter(m => m.context_length !== null);
+  function register(catalog: Catalog) {
+    const candidates = chatCandidates(catalog).filter((m): m is typeof m & { context_length: number } => m.context_length !== null);
     providerConfig = {
       name: 'Nebius Token Factory', baseUrl: TF_BASE, api: 'openai-completions', apiKey: '$NEBIUS_API_KEY',
       models: candidates.map(m => ({ type: 'chat', id: m.id, name: m.name, reasoning: m.reasoning, input: m.modalities,
@@ -38,10 +40,10 @@ export default async function (pi: ExtensionAPI) {
     pi.registerProvider('tokenfactory', providerConfig);
   }
   // Registration remains local/offline at load time. Refresh on the first task.
-  const initial = await readJSON(join(CACHE_DIR, 'catalog.json'));
+  const initial = await readJSON<Catalog>(join(CACHE_DIR, 'catalog.json'));
   if (initial) register(initial);
 
-  const callTeacher = (ctx: ExtensionContext) => async ({ systemPrompt, prompt, signal }: any) => {
+  const callTeacher = (ctx: ExtensionContext) => async ({ systemPrompt, prompt, signal }: TeacherInput) => {
     const model = ctx.modelRegistry.find(TEACHER.provider, TEACHER.id);
     if (!model) throw new Error('GPT-6.1 Sol is missing from Pi’s Codex catalogue');
     const response = await ctx.modelRegistry.streamSimple(model, {
@@ -49,9 +51,9 @@ export default async function (pi: ExtensionAPI) {
       // No tools, history, repository instructions or execution-model system prompt.
     }, { reasoning: 'high', maxTokens: 8192, signal }).result();
     if (response.stopReason === 'error' || response.stopReason === 'aborted') throw new Error('Teacher request failed');
-    return response.content.filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
+    return response.content.filter(b => b.type === 'text').map(b => b.text).join('');
   };
-  async function select(task: string, kind: string, ctx: ExtensionContext, requirements: any = {}, signal?: AbortSignal) {
+  async function select(task: string, kind: 'conversation' | 'subagent', ctx: ExtensionContext, requirements: Requirements = {}, signal?: AbortSignal) {
     const result = await routeTask({ task, kind, preferences: config,
       requirements: { allowedModels: config.allowedModels, ...requirements },
       callTeacher: callTeacher(ctx), dir: CACHE_DIR, signal, capture: config.capture,
@@ -59,24 +61,27 @@ export default async function (pi: ExtensionAPI) {
       notify: (s: string) => notice(ctx, s, 'warning'),
     });
     // Refresh the runtime provider list to the exact catalogue used for selection.
-    register(await readJSON(join(CACHE_DIR, 'catalog.json')));
+    const catalog = await readJSON<Catalog>(join(CACHE_DIR, 'catalog.json'));
+    if (!catalog) throw new Error('Missing Token Factory catalogue');
+    register(catalog);
     return result;
   }
-  function display(ctx: ExtensionContext, decision: any) {
+  function display(ctx: ExtensionContext, decision: Decision) {
     const p = decision.pick;
     const price = (n: number | null) => n === null ? 'unknown' : `$${n.toFixed(3)}`;
-    notice(ctx, `${p.name} · Token Factory · ${price(p.cost_in_per_1m)} in / ${price(p.cost_out_per_1m)} out per 1M tokens · ${price(p.blended_cost_per_1m)} blended (50/50) · latency unknown\nAlternatives: ${decision.alternatives.map((a: any) => a.name).join(', ') || 'none'} · confidence not yet calibrated`);
+    notice(ctx, `${p.name} · Token Factory · ${price(p.cost_in_per_1m)} in / ${price(p.cost_out_per_1m)} out per 1M tokens · ${price(p.blended_cost_per_1m)} blended (50/50) · latency unknown\nAlternatives: ${decision.alternatives.map(a => a.name).join(', ') || 'none'} · confidence not yet calibrated`);
     if (ctx.hasUI) ctx.ui.setStatus('goldilocks', `Goldilocks: ${p.name}`);
   }
-  async function logApplied(ctx: ExtensionContext, kind: string, status: string, model?: any) {
+  async function logApplied(ctx: ExtensionContext, kind: string, status: string, model?: { id: string; provider: string }) {
     try {
       await decisionLog(CACHE_DIR, { at: new Date().toISOString(), kind, status,
         model: model?.id, provider: model?.provider, teacher: TEACHER });
     } catch { notice(ctx, 'Goldilocks decision log could not be written', 'warning'); }
   }
   function priorContext(ctx: ExtensionContext) {
-    const entries: any[] = ctx.sessionManager.getBranch();
-    const saved = entries.filter(e => e.type === 'custom' && e.customType === ENTRY).at(-1)?.data;
+    const entries = ctx.sessionManager.getBranch();
+    const entry = entries.findLast(e => e.type === 'custom' && e.customType === ENTRY);
+    const saved = entry?.type === 'custom' ? entry.data as { model?: string } | undefined : undefined;
     const hasMessages = entries.some(e => e.type === 'message' && (e.message?.role === 'user' || e.message?.role === 'assistant'));
     return { saved, hasMessages };
   }
@@ -126,11 +131,11 @@ export default async function (pi: ExtensionAPI) {
     handler: async (args, ctx) => {
       const [command = 'status', value] = args.trim().split(/\s+/);
       if (command === 'status') {
-        const aa = await readJSON(join(CACHE_DIR, 'aa-pages.json'));
-        const catalog = await readJSON(join(CACHE_DIR, 'catalog.json'));
-        const current = ctx.model?.provider === 'tokenfactory' ? chatCandidates(catalog || {}).find(m => m.id === ctx.model.id) : null;
+        const aa = await readJSON<Evidence>(join(CACHE_DIR, 'aa-pages.json'));
+        const catalog = await readJSON<Catalog>(join(CACHE_DIR, 'catalog.json'));
+        const current = ctx.model?.provider === 'tokenfactory' ? chatCandidates(catalog || { models: [] }).find(m => m.id === ctx.model?.id) : null;
         const { saved } = priorContext(ctx);
-        const selected = lastDecision?.pick || chatCandidates(catalog || {}).find(m => m.id === saved?.model);
+        const selected = lastDecision?.pick || chatCandidates(catalog || { models: [] }).find(m => m.id === saved?.model);
         notice(ctx, JSON.stringify({ quality: { value: config.quality, range: '1–5: economical/adequate → strongest task capability' },
           cost_ceiling: { usd_per_million_tokens: config.maxCostPerMillionTokens, blend: '50% uncached input + 50% output', unlimited: config.maxCostPerMillionTokens === null },
           capture: config.capture, routed: done,
@@ -169,7 +174,7 @@ export default async function (pi: ExtensionAPI) {
     async execute(_id, params, signal, _update, ctx) {
       if (childRunning) throw new Error('A Goldilocks subagent is already running');
       childRunning = true;
-      let child: any, runtime: any;
+      let child: AgentSession | undefined, runtime: ModelRuntime | undefined;
       try {
         const allowed = new Set(pi.getActiveTools());
         const tools = (params.tools || ['read', 'grep', 'find', 'ls']).filter(n => allowed.has(n));
@@ -198,13 +203,13 @@ export default async function (pi: ExtensionAPI) {
           settingsManager: SettingsManager.inMemory({ retry: { enabled: false, maxRetries: 0 } }),
         }));
         const deadline = AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(300000)]);
-        const abort = () => { void child.abort(); };
+        const abort = () => { void child?.abort(); };
         deadline.addEventListener('abort', abort, { once: true });
         try {
           deadline.throwIfAborted();
           await child.prompt(params.task);
           deadline.throwIfAborted();
-          const last = child.messages.filter((m: any) => m.role === 'assistant').at(-1);
+          const last = child.messages.filter(m => m.role === 'assistant').at(-1);
           if (!last || last.stopReason === 'error' || last.stopReason === 'aborted') throw new Error('Subagent execution failed');
           return { content: [{ type: 'text', text: child.getLastAssistantText() || '(Subagent returned no text)' }],
             details: { provider: model.provider, model: model.id, tools } };

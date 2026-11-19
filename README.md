@@ -45,7 +45,7 @@ Status: the teacher-backed Pi extension is implemented. Live tests verified auto
 
 ## Run locally
 
-Requires Node 22.16+ (tested with Node 25) and Pi (tested with `@earendil-works/pi-coding-agent` 1.5.2). No npm dependencies need installing.
+Requires Node 22.19+ and Pi (tested with `@earendil-works/pi-coding-agent` 1.5.2). Node runs the TypeScript source directly. For development, run `npm ci` to install the pinned compiler and SDK, then `npm run typecheck` to check the source, configuration, extension, scripts and tests.
 
 1. In Pi, run `/login openai-codex` and sign in. Sol must be available in that account.
 2. Put `TAVILY_API_KEY` and `NEBIUS_API_KEY` in a local `.env` using [.env.example](.env.example). Never commit keys.
@@ -64,7 +64,7 @@ The local package is also registered in this project’s Pi settings. You can ru
 
 `discover` reuses an existing crawl; `--force` deliberately recrawls. `links` extracts the AA evaluation/index directories. The local setup currently has 24 catalogue entries, 23 tool-capable chat candidates and 53 discovered AA pages. These are a dated discovery result, not a guarantee of exhaustive site coverage.
 
-Use [goldilocks.config.mjs](goldilocks.config.mjs) for defaults and an optional model-ID allow-list. Every setting has comments describing its meaning, units and allowed range. In Pi:
+Use [goldilocks.config.ts](goldilocks.config.ts) for defaults and an optional model-ID allow-list. If upgrading a customized configuration, transfer your values from `goldilocks.config.mjs` to the TypeScript file. Every setting has comments describing its meaning, units and allowed range. In Pi:
 
 ```text
 /goldilocks status
@@ -88,4 +88,4 @@ All extracted pages are stored in `.cache/goldilocks/aa-pages.json`; URLs in `aa
 
 Confidence is explicitly uncalibrated (`null`), and Token Factory endpoint latency is unknown. Routing does not claim that AA results from a different harness/provider predict identical task results. A full-page evidence payload is the teacher-stage contract; adapting that representation to Laya's context limit remains to be designed.
 
-Run `npm test` for offline tests. `npm run smoke` makes live teacher/provider calls to verify a conversation, follow-up, reload and direct subagent execution. `node --env-file=.env scripts/smoke.mjs --delegation` additionally checks a model-generated tool call. No quality benchmark is implied by these connection tests.
+Run `npm test` for offline tests. `npm run smoke` makes live teacher/provider calls to verify a conversation, follow-up, reload and direct subagent execution. `node --env-file=.env scripts/smoke.ts --delegation` additionally checks a model-generated tool call. No quality benchmark is implied by these connection tests.

@@ -1,4 +1,14 @@
-export default {
+interface Config {
+  quality: number;
+  maxCostPerMillionTokens: number | null;
+  teacherTimeoutMs: number;
+  maxEvidenceChars: number;
+  maxEvidencePages: number;
+  capture: boolean;
+  allowedModels: string[] | null;
+}
+
+const defaults: Config = {
   // Quality priority: integer 1–5. 1 = economical/adequate; 3 = balanced; 5 = strongest task capability within the cost ceiling.
   quality: 3,
 
@@ -21,3 +31,5 @@ export default {
   // null = all eligible Token Factory chat models; otherwise an array of exact provider model IDs. [] = no eligible models.
   allowedModels: null,
 };
+
+export default defaults;

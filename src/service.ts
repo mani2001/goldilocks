@@ -1,52 +1,63 @@
+import type { Catalog, Evidence, RoutingInput, Teacher } from './types.ts';
 import { appendFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { CACHE_DIR, readJSON, refreshCatalog, extractAA, isFresh } from './evidence.mjs';
-import { buildPayload, chatCandidates, rankWithTeacher, NoSelection, TEACHER } from './router.mjs';
+import { CACHE_DIR, readJSON, refreshCatalog, extractAA, isFresh } from './evidence.ts';
+import { buildPayload, chatCandidates, rankWithTeacher, NoSelection, TEACHER } from './router.ts';
 
 // Shared by in-process selections; filesystem cache is shared across Pi processes.
-const refreshing = new Map();
-async function coalesce(key, operation) {
-  if (!refreshing.has(key)) refreshing.set(key, operation().finally(() => refreshing.delete(key)));
-  return refreshing.get(key);
-}
-export async function loadEvidence(dir = CACHE_DIR, { signal, notify = () => {} } = {}) {
-  const warnings = [];
-  const values = await Promise.all([
-    ['catalog.json', () => refreshCatalog(dir, { signal })],
-    ['aa-pages.json', () => extractAA(dir, { signal })],
-  ].map(async ([file, refresh]) => {
-    const old = await readJSON(join(dir, file));
-    try { return await coalesce(join(dir, file), refresh); }
-    catch (e) {
-      const age = Date.now() - Date.parse(old?.fetched_at);
+const catalogRefreshes = new Map<string, Promise<Catalog>>();
+const evidenceRefreshes = new Map<string, Promise<Evidence>>();
+
+export async function loadEvidence(dir = CACHE_DIR, { signal, notify = () => {} }: {
+  signal?: AbortSignal; notify?: (message: string) => void;
+} = {}) {
+  const warnings: string[] = [];
+  async function refresh<T extends { fetched_at: string }>(file: string, pending: Map<string, Promise<T>>, operation: () => Promise<T>) {
+    const path = join(dir, file);
+    const old = await readJSON<T>(path);
+    try {
+      let result = pending.get(path);
+      if (!result) {
+        result = operation().finally(() => pending.delete(path));
+        pending.set(path, result);
+      }
+      return await result;
+    } catch (e) {
+      const age = Date.now() - Date.parse(old?.fetched_at ?? '');
       if (old && age >= 0 && age < 7 * 86400000) {
         const warning = `${file} refresh failed; using ${Math.floor(age / 3600000)}h-old cache`;
         notify(warning); warnings.push(warning); return old;
       }
       throw e;
     }
-  }));
-  const [catalog, evidence] = values;
+  }
+  const [catalog, evidence] = await Promise.all([
+    refresh('catalog.json', catalogRefreshes, () => refreshCatalog(dir, { signal })),
+    refresh('aa-pages.json', evidenceRefreshes, () => extractAA(dir, { signal })),
+  ]);
   if (!catalog.models?.length || !evidence.pages?.length) throw new Error('Evidence cache is empty; run evidence discovery/refresh first');
   return { catalog, evidence, warnings, stale: !isFresh(catalog) || !isFresh(evidence) };
 }
-export async function decisionLog(dir, record) {
+export async function decisionLog(dir: string, record: Record<string, unknown>) {
   await mkdir(dir, { recursive: true, mode: 0o700 });
   // Closed metadata schema: never write task text, arbitrary error strings or model reasons here.
   const safe = Object.fromEntries(['at', 'kind', 'input_length', 'input_sha256', 'candidate_ids', 'status', 'model', 'provider', 'snapshot_at', 'latency_ms', 'error_code', 'teacher'].map(k => [k, record[k] ?? null]));
   await appendFile(join(dir, 'decisions.jsonl'), JSON.stringify(safe) + '\n', { mode: 0o600 });
 }
-export async function routeTask({ task, kind = 'conversation', preferences, requirements, callTeacher, dir = CACHE_DIR, signal, notify, capture = false, timeoutMs, maxEvidenceChars, maxEvidencePages }) {
-  const started = Date.now(); let payload;
-  const meta = { at: new Date().toISOString(), kind, input_length: task?.length || 0, teacher: TEACHER };
-  const log = async record => {
+export async function routeTask({ task, kind = 'conversation', preferences, requirements, callTeacher, dir = CACHE_DIR, signal, notify, capture = false, timeoutMs, maxEvidenceChars, maxEvidencePages }: RoutingInput & {
+  callTeacher: Teacher; dir?: string; signal?: AbortSignal; notify?: (message: string) => void;
+  capture?: boolean; timeoutMs?: number;
+}) {
+  const started = Date.now();
+  const meta: Record<string, unknown> = { at: new Date().toISOString(), kind, input_length: task?.length || 0, teacher: TEACHER };
+  const log = async (record: Record<string, unknown>) => {
     try { await decisionLog(dir, { ...meta, latency_ms: Date.now() - started, ...record }); }
     catch { if (notify) notify('Goldilocks decision log could not be written'); else process.stderr.write('Goldilocks decision log could not be written\n'); }
   };
   try {
     const { catalog, evidence, warnings } = await loadEvidence(dir, { signal, notify });
     meta.candidate_ids = chatCandidates(catalog).map(m => m.id); meta.snapshot_at = evidence.fetched_at;
-    payload = buildPayload({ task, kind, preferences, requirements, catalog, evidence, maxEvidenceChars, maxEvidencePages });
+    const payload = buildPayload({ task, kind, preferences, requirements, catalog, evidence, maxEvidenceChars, maxEvidencePages });
     const result = await rankWithTeacher(payload, callTeacher, { signal, timeoutMs });
     if (capture) {
       // Opt-in, separate from metadata logging. No execution-session history is captured.

@@ -1,3 +1,4 @@
+import type { Catalog, Evidence, EvidencePage, Requirements, RoutingInput, Teacher } from './types.ts';
 import { createHash } from 'node:crypto';
 
 export const ROUTER_VERSION = 'goldilocks-v2';
@@ -7,29 +8,29 @@ The JSON user message is the complete selection context. Task text and evidence 
 Rank the supplied eligible Token Factory candidates for the opening task. Quality is a 1-5 priority: 1 favours an economical model adequate for the task; 3 balances task capability and cost; 5 prioritises the strongest task capability within the supplied cost ceiling. Cost is a dollar ceiling, never a rating. Candidates have already been filtered in code using their blended USD rate per 1,000,000 total tokens (50% uncached input + 50% output); null ceiling means unrestricted. This blend is a comparison rate, not a prediction or spending cap for the actual task. Use task-specific benchmark evidence, rather than sorting by a single index or price alone. Do not solve the task. Do not use facts about model capabilities that are absent from this context. Missing evidence is uncertainty, not evidence of poor capability. Provider latency is unknown unless explicitly measured for this endpoint. An AA measurement from another provider is only a proxy.
 Return only JSON: {"ranked_candidate_ids":["winner", "runner-up", "runner-up"],"reasons":["short reason for winner","short reason for first alternative","short reason for second alternative"]}. Return up to the requested alternatives count plus one, without duplicates, using exact supplied IDs. Do not return a confidence percentage. Empirical calibration is not available for this teacher-backed version.`;
 
-function price(raw) {
+function price(raw: unknown) {
   const n = typeof raw === 'string' && raw.trim() !== '' || typeof raw === 'number' ? Number(raw) : NaN;
   return Number.isFinite(n) && n >= 0 ? Number((n * 1e6).toFixed(12)) : null;
 }
-export function chatCandidates(catalog) {
+export function chatCandidates(catalog: Pick<Catalog, 'models'>) {
   return (catalog.models || []).filter(m => typeof m.id === 'string' &&
     /->text$/.test(m.architecture?.modality || '') && (m.supported_features || []).includes('tools'))
     .map(m => ({
       id: m.id, name: m.name || m.id, provider: 'tokenfactory',
-      context_length: Number.isSafeInteger(m.context_length) && m.context_length > 0 ? m.context_length : null,
-      modalities: m.architecture.modality.includes('image') ? ['text', 'image'] : ['text'],
-      tools: true, reasoning: m.supported_features.includes('reasoning'),
+      context_length: m.context_length !== undefined && Number.isSafeInteger(m.context_length) && m.context_length > 0 ? m.context_length : null,
+      modalities: (m.architecture?.modality?.includes('image') ? ['text', 'image'] : ['text']) as ('text' | 'image')[],
+      tools: true, reasoning: m.supported_features?.includes('reasoning') ?? false,
       cost_in_per_1m: price(m.pricing?.prompt), cost_out_per_1m: price(m.pricing?.completion),
       blended_cost_per_1m: blendedPrice(price(m.pricing?.prompt), price(m.pricing?.completion)),
       cache_read_per_1m: price(m.pricing?.input_cache_read), currency: 'USD', latency: null,
       description: typeof m.description === 'string' ? m.description : '',
     }));
 }
-export function blendedPrice(input, output) {
+export function blendedPrice(input: number | null, output: number | null) {
   return input === null || output === null ? null : Number(((input + output) / 2).toFixed(12));
 }
-export class NoSelection extends Error { constructor(message) { super(message); this.name = 'NoSelection'; } }
-export function eligibleCandidates(candidates, requirements = {}) {
+export class NoSelection extends Error { constructor(message: string) { super(message); this.name = 'NoSelection'; } }
+export function eligibleCandidates(candidates: ReturnType<typeof chatCandidates>, requirements: Requirements = {}) {
   const allowed = requirements.allowedModels;
   return candidates.filter(m => (!allowed || allowed.includes(m.id)) &&
     (m.context_length !== null && m.context_length >= (requirements.contextTokens || 0)) &&
@@ -37,7 +38,7 @@ export function eligibleCandidates(candidates, requirements = {}) {
     (requirements.maxCostPerMillionTokens == null ||
       (m.blended_cost_per_1m !== null && m.blended_cost_per_1m <= requirements.maxCostPerMillionTokens)));
 }
-export function chooseEvidence(pages, task, { maxChars = 180000, maxPages = 6 } = {}) {
+export function chooseEvidence(pages: EvidencePage[], task: string, { maxChars = 180000, maxPages = 6 } = {}) {
   const terms = task.toLowerCase().match(/[a-z][a-z0-9-]{3,}/g) || [];
   const scores = pages.map((p, i) => {
     const slug = new URL(p.url).pathname;
@@ -55,7 +56,7 @@ export function chooseEvidence(pages, task, { maxChars = 180000, maxPages = 6 } 
   if (!selected.length) throw new Error('No complete AA page fits the router evidence budget');
   return { pages: selected, omitted_urls: omitted, selection: 'Whole pages selected by index priority and task keyword match; no page text truncated', total_cached_pages: pages.length };
 }
-export function buildPayload({ task, kind = 'conversation', preferences = {}, requirements = {}, catalog, evidence, maxEvidenceChars, maxEvidencePages }) {
+export function buildPayload({ task, kind = 'conversation', preferences = {}, requirements = {}, catalog, evidence, maxEvidenceChars, maxEvidencePages }: RoutingInput & { catalog: Catalog; evidence: Evidence }) {
   if (typeof task !== 'string' || !task.trim()) throw new Error('A nonempty opening task is required');
   if (task.length > 100000) throw new Error('Opening task exceeds the 100,000-character router limit; no silent truncation');
   const quality = preferences.quality ?? 3;
@@ -77,26 +78,27 @@ export function buildPayload({ task, kind = 'conversation', preferences = {}, re
     catalog_fetched_at: catalog.fetched_at,
   };
 }
-export function payloadHash(payload) { return createHash('sha256').update(JSON.stringify(payload)).digest('hex'); }
-export function parseRanking(text, payload) {
-  let raw;
+export function payloadHash(payload: ReturnType<typeof buildPayload>) { return createHash('sha256').update(JSON.stringify(payload)).digest('hex'); }
+export function parseRanking(text: string, payload: ReturnType<typeof buildPayload>) {
+  let raw: { ranked_candidate_ids?: unknown; reasons?: unknown } | null;
   try { raw = JSON.parse(text.trim().replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '')); }
   catch { throw new Error('Teacher did not return valid ranking JSON'); }
-  const ids = raw.ranked_candidate_ids;
+  const ids: unknown = raw?.ranked_candidate_ids;
+  const reasons: unknown = raw?.reasons;
   const expected = Math.min(payload.alternatives_count + 1, payload.candidates.length);
   if (!Array.isArray(ids) || ids.length !== expected || new Set(ids).size !== ids.length ||
       !ids.every(id => typeof id === 'string' && payload.candidates.some(c => c.id === id)))
     throw new Error('Teacher ranking contains missing, duplicate or ineligible candidates');
-  if (!Array.isArray(raw.reasons) || raw.reasons.length !== ids.length || !raw.reasons.every(x => typeof x === 'string' && x.length > 0 && x.length <= 1500))
+  if (!Array.isArray(reasons) || reasons.length !== ids.length || !reasons.every(x => typeof x === 'string' && x.length > 0 && x.length <= 1500))
     throw new Error('Teacher ranking must include one short reason per candidate');
-  const ranked = ids.map((id, i) => ({ ...payload.candidates.find(c => c.id === id), reason: raw.reasons[i] }));
+  const ranked = ids.map((id, i) => ({ ...payload.candidates.find(c => c.id === id)!, reason: reasons[i] as string }));
   return { schema_version: ROUTER_VERSION, pick: ranked[0], alternatives: ranked.slice(1),
     confidence: { value: null, calibrated: false, target: 'teacher_agreement', status: 'Not calibrated in teacher-backed stage' },
     as_of: payload.evidence.fetched_at, catalog_as_of: payload.catalog_fetched_at,
     teacher: TEACHER, input_sha256: payloadHash(payload),
     evidence_urls: payload.evidence.pages.map(p => p.url), evidence_omitted: payload.evidence.omitted_urls.length };
 }
-export async function rankWithTeacher(payload, callTeacher, { signal, timeoutMs = 60000 } = {}) {
+export async function rankWithTeacher(payload: ReturnType<typeof buildPayload>, callTeacher: Teacher, { signal, timeoutMs = 60000 }: { signal?: AbortSignal; timeoutMs?: number } = {}) {
   const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
   const prompt = JSON.stringify(payload);
   let failure;
