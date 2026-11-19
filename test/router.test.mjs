@@ -146,3 +146,33 @@ test('teacher timeout is passed to the isolated call and failures leave only met
   assert.equal(log.includes('SECRET_TIMEOUT_TASK'), false);
   assert.equal(JSON.parse(log.trim()).status, 'fallback');
 });
+
+test('dollar ceiling uses an explicit 50/50 rate and filters before the teacher sees candidates', () => {
+  const catalogWithPrices = { ...catalog, models: [
+    model('budget', { pricing: { prompt: '0.0000001', completion: '0.0000003' } }),
+    model('expensive', { pricing: { prompt: '0.000001', completion: '0.000003' } }),
+    model('unpriced', { pricing: {} }),
+  ] };
+  const p = buildPayload({ task: 'Review code', catalog: catalogWithPrices, evidence,
+    preferences: { quality: 5, maxCostPerMillionTokens: 0.20 } });
+  assert.deepEqual(p.candidates.map(c => c.id), ['budget']);
+  assert.equal(p.candidates[0].cost_in_per_1m, 0.1);
+  assert.equal(p.candidates[0].blended_cost_per_1m, 0.2);
+  assert.equal(p.requirements.maxCostPerMillionTokens, 0.2);
+  assert.equal(p.preferences.quality, 5);
+  assert.equal('cost' in p.preferences, false);
+  assert.equal(p.cost_basis.input_fraction, 0.5);
+  assert.equal(p.cost_basis.output_fraction, 0.5);
+  assert.equal(p.alternatives_count, 0);
+  assert.throws(() => parseRanking('{"ranked_candidate_ids":["expensive"],"reasons":["strong"]}', p), /ineligible/);
+});
+test('cost ceiling accepts null and zero but rejects invalid dollar amounts', () => {
+  for (const value of [-1, NaN, Infinity, '0.50', false]) {
+    assert.throws(() => buildPayload({ task: 'task', catalog, evidence, preferences: { maxCostPerMillionTokens: value } }), /USD amount/);
+  }
+  assert.equal(payload().requirements.maxCostPerMillionTokens, null);
+  assert.equal(payload().candidates.length, 2);
+  assert.throws(() => buildPayload({ task: 'task', catalog, evidence, preferences: { maxCostPerMillionTokens: 0 } }), NoSelection);
+  const free = { ...catalog, models: [model('free', { pricing: { prompt: '0', completion: '0' } })] };
+  assert.equal(buildPayload({ task: 'task', catalog: free, evidence, preferences: { maxCostPerMillionTokens: 0 } }).candidates[0].id, 'free');
+});

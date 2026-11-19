@@ -9,7 +9,7 @@ Goldilocks selects the model for a conversation or subagent task from the openin
 - **Teacher:** GPT-6.1 Sol at **high** reasoning effort through Pi's authenticated `openai-codex` provider; no separate Codex server or OpenAI API key is required.
 - **Execution models:** Nebius Token Factory, using the user's API key and available catalogue.
 - **Decision model:** fine-tuned Laya (`convaiinnovations/laya-typed-decisions`), an encoder-based model that ranks candidates rather than generating answers.
-- **Preferences:** quality and cost, each rated 1–5; keep configuration small.
+- **Preferences:** quality rated 1–5, plus an optional dollar ceiling per million tokens. No cost rating.
 - **Evidence:** Artificial Analysis only, retrieved with Tavily. A one-time crawl and directory extraction discover URLs; full pages are cached locally and refreshed with Extract every 24 hours. Token Factory supplies model metadata and prices.
 - **Output:** pick, alternatives, confidence with an accurate calibration status, provider, input/output token prices and latency where known.
 
@@ -33,7 +33,7 @@ These three documents are the current source of truth:
 2. **[Design](docs/DESIGN.md):** routing flow, evidence, boundaries and operational behavior.
 3. **[Plan](docs/PLAN.md):** delivery stages, validation and remaining decisions.
 
-Status: the teacher-backed Pi extension is implemented. Live tests verified automatic Token Factory selection, model pinning on follow-up, extension reload without rerouting, and actual parent-to-subagent delegation. Fourteen automated tests cover cache behavior, constraints, output validation, privacy and timeouts. Laya training/calibration and product-quality/cost benefits remain future work.
+Status: the teacher-backed Pi extension is implemented. Live tests verified automatic Token Factory selection, model pinning on follow-up, extension reload without rerouting, and actual parent-to-subagent delegation. Automated tests cover cache behavior, constraints, output validation, privacy and timeouts. Laya training/calibration and product-quality/cost benefits remain future work.
 
 ## Run locally
 
@@ -56,18 +56,23 @@ The local package is also registered in this project’s Pi settings. You can ru
 
 `discover` reuses an existing crawl; `--force` deliberately recrawls. `links` extracts the AA evaluation/index directories. The local setup currently has 24 catalogue entries, 23 tool-capable chat candidates and 53 discovered AA pages. These are a dated discovery result, not a guarantee of exhaustive site coverage.
 
-Use [goldilocks.config.json](goldilocks.config.json) for defaults and an optional model-ID allow-list. In Pi:
+Use [goldilocks.config.mjs](goldilocks.config.mjs) for defaults and an optional model-ID allow-list. Every setting has comments describing its meaning, units and allowed range. In Pi:
 
 ```text
 /goldilocks status
 /goldilocks quality 4
-/goldilocks cost 5
+/goldilocks cost 0.50
+/goldilocks cost off
 /goldilocks refresh
 /goldilocks capture on
 /goldilocks capture off
 ```
 
-Higher `cost` prioritises savings. Command changes apply to that Pi process; edit the config file for persistent defaults. Capture is off by default and stores exact router inputs/outputs locally when enabled. It does not train a model automatically. Ordinary logs exclude task text.
+`quality` ranges from 1 (economical/adequate) to 5 (strongest task capability), with 3 balanced. `cost 0.50` sets a **$0.50 per million total tokens** ceiling at a fixed **50% uncached input + 50% output** blend; both the pick and alternatives are filtered against it before calling Sol. Unknown prices are excluded when a ceiling is active. `cost off` removes the ceiling; the default is off because no dollar limit has been chosen. Actual task spending depends on token use and input/output mix; this comparison rate is not a per-task spending cap. The accepted native-fallback exception still applies.
+
+`/goldilocks status` shows separate input/output/blended rates and recorded Token Factory token usage/cost on the conversation branch. Costs are labelled as catalogue estimates unless provider-reported; router/subagent calls are not included in this total. It also labels quality's 1–5 range and the cost ceiling's dollar units. Resuming through `npm start -- --continue` preserves the saved execution model.
+
+Command changes apply to that Pi process; edit the commented config file and restart Pi for persistent defaults. Capture is off by default and stores exact router inputs/outputs locally when enabled. It does not train a model automatically. Ordinary logs exclude task text.
 
 The active model can call `goldilocks_subagent` with complete task instructions and an allowed subset of the parent's built-in tools. Each child is an in-memory Pi session with a routed model, no recursive delegation and a five-minute execution deadline. Different models' actual tool-use reliability varies even when the provider advertises tools.
 

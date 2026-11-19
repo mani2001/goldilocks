@@ -1,9 +1,0 @@
-{
-  "quality": 3,
-  "cost": 3,
-  "teacherTimeoutMs": 60000,
-  "maxEvidenceChars": 180000,
-  "maxEvidencePages": 6,
-  "capture": false,
-  "allowedModels": null
-}

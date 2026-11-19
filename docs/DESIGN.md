@@ -16,17 +16,19 @@ For a new conversation evidence refresh runs before the first execution-model re
 
 ## Router contract
 
-The implemented schema is `goldilocks-v1` in `src/router.mjs`. It is the teacher/student boundary; eventual Laya input representation still needs design.
+The implemented schema is `goldilocks-v2` in `src/router.mjs`. It is the teacher/student boundary; eventual Laya input representation still needs design.
 
 | Input | Meaning |
 | --- | --- |
 | Initial task | Opening conversation prompt or parent-authored subagent instructions |
-| Preferences | `quality` and `cost`, each 1–5 |
+| Preferences | `quality` 1–5; optional `maxCostPerMillionTokens` in USD |
 | Hard requirements | Configured availability, required context length and modality; other explicit hard requirements only when supported |
 | Candidates | Token Factory model IDs, capability evidence, input/output prices, context/modality and latency when known |
 | Provenance | Source, benchmark/configuration version, observation time, snapshot version and missing fields |
 
-Implemented preference convention: higher quality means stronger emphasis on capability; higher cost means stronger emphasis on saving money, not permission to spend more. No broad configuration framework is needed.
+Quality is an integer 1–5: 1 = economical/adequate, 3 = balanced, 5 = strongest task capability within the price ceiling. Cost is not a rating. Optional `maxCostPerMillionTokens` is a nonnegative USD ceiling on the fixed 50% uncached input + 50% output catalogue rate. Null means no ceiling. Code removes over-budget or unpriced candidates before ranking; all alternatives satisfy the same ceiling. This is a comparison rate, not a per-task budget or prediction of the actual input/output mix. All persistent settings are commented in `goldilocks.config.mjs`.
+
+Status reports current/selected model price rates with currency/units and sums recorded Token Factory assistant-message usage on the current conversation branch. Historical Pi costs are retained rather than repricing old responses; missing usage stays unknown and catalogue estimates are not labelled invoices. Router and child-session costs are excluded explicitly. The launcher does not force the teacher model on a resumed session.
 
 Output is a pick and ordered alternatives, confidence with its target/calibration status, and candidate metadata. The teacher returns a pick plus up to two alternatives as an ordered ID list and short reasons; identifiers and constraints are validated before use. Prices must include currency and per-token unit; distinguish time-to-first-token, throughput and end-to-end latency. Unknown measurements stay unknown. Explanations can be debug information during teacher development; do not make generative explanations part of Laya's contract without a decision.
 

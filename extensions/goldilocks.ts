@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { CACHE_DIR, TF_BASE, readJSON, refreshCatalog, extractAA } from '../src/evidence.mjs';
 import { chatCandidates, NoSelection, TEACHER } from '../src/router.mjs';
 import { routeTask, decisionLog } from '../src/service.mjs';
+import { executionUsage, modelPricing } from '../src/status.mjs';
+import defaults from '../goldilocks.config.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ENTRY = 'goldilocks-selection';
@@ -13,8 +15,7 @@ const TOOL_NAMES = ['read', 'grep', 'find', 'ls', 'bash', 'edit', 'write'];
 export default async function (pi: ExtensionAPI) {
   // Explicitly loaded package config only, not arbitrary working-directory code.
   try { process.loadEnvFile(join(ROOT, '.env')); } catch (e: any) { if (e.code !== 'ENOENT') throw e; }
-  const config = { quality: 3, cost: 3, teacherTimeoutMs: 60000, maxEvidenceChars: 180000, maxEvidencePages: 6, capture: false, allowedModels: null,
-    ...(await readJSON(join(ROOT, 'goldilocks.config.json')) || {}) };
+  const config = { ...defaults };
   let done = false;
   let providerConfig: any;
   let lastDecision: any;
@@ -59,13 +60,12 @@ export default async function (pi: ExtensionAPI) {
     });
     // Refresh the runtime provider list to the exact catalogue used for selection.
     register(await readJSON(join(CACHE_DIR, 'catalog.json')));
-    lastDecision = result;
     return result;
   }
   function display(ctx: ExtensionContext, decision: any) {
     const p = decision.pick;
     const price = (n: number | null) => n === null ? 'unknown' : `$${n.toFixed(3)}`;
-    notice(ctx, `${p.name} · Token Factory · ${price(p.cost_in_per_1m)} in / ${price(p.cost_out_per_1m)} out per 1M tokens · latency unknown\nAlternatives: ${decision.alternatives.map((a: any) => a.name).join(', ') || 'none'} · confidence not yet calibrated`);
+    notice(ctx, `${p.name} · Token Factory · ${price(p.cost_in_per_1m)} in / ${price(p.cost_out_per_1m)} out per 1M tokens · ${price(p.blended_cost_per_1m)} blended (50/50) · latency unknown\nAlternatives: ${decision.alternatives.map((a: any) => a.name).join(', ') || 'none'} · confidence not yet calibrated`);
     if (ctx.hasUI) ctx.ui.setStatus('goldilocks', `Goldilocks: ${p.name}`);
   }
   async function logApplied(ctx: ExtensionContext, kind: string, status: string, model?: any) {
@@ -104,6 +104,7 @@ export default async function (pi: ExtensionAPI) {
       }, ctx.signal);
       const model = ctx.modelRegistry.find('tokenfactory', decision.pick.id);
       if (!model || !(await pi.setModel(model))) throw new Error('Pi could not apply the selected model');
+      lastDecision = decision;
       pi.appendEntry(ENTRY, { status: 'selected', model: decision.pick.id, provider: 'tokenfactory', input_sha256: decision.input_sha256 });
       await logApplied(ctx, 'conversation', 'applied', model);
       display(ctx, decision);
@@ -121,19 +122,32 @@ export default async function (pi: ExtensionAPI) {
   });
 
   pi.registerCommand('goldilocks', {
-    description: 'status | refresh | quality 1-5 | cost 1-5 | capture on/off',
+    description: 'status | refresh | quality 1-5 | cost USD-per-million/off | capture on/off',
     handler: async (args, ctx) => {
       const [command = 'status', value] = args.trim().split(/\s+/);
       if (command === 'status') {
         const aa = await readJSON(join(CACHE_DIR, 'aa-pages.json'));
-        notice(ctx, JSON.stringify({ quality: config.quality, cost: config.cost, capture: config.capture, routed: done,
+        const catalog = await readJSON(join(CACHE_DIR, 'catalog.json'));
+        const current = ctx.model?.provider === 'tokenfactory' ? chatCandidates(catalog || {}).find(m => m.id === ctx.model.id) : null;
+        const { saved } = priorContext(ctx);
+        const selected = lastDecision?.pick || chatCandidates(catalog || {}).find(m => m.id === saved?.model);
+        notice(ctx, JSON.stringify({ quality: { value: config.quality, range: '1–5: economical/adequate → strongest task capability' },
+          cost_ceiling: { usd_per_million_tokens: config.maxCostPerMillionTokens, blend: '50% uncached input + 50% output', unlimited: config.maxCostPerMillionTokens === null },
+          capture: config.capture, routed: done,
           current_model: ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : null,
+          current_model_pricing: modelPricing(current), execution_usage: executionUsage(ctx.sessionManager.getBranch()),
+          selected_model_pricing: modelPricing(selected),
           aa_pages: aa?.pages?.length || 0, aa_as_of: aa?.fetched_at || null, cache: CACHE_DIR,
-          last_pick: lastDecision?.pick?.id || null, confidence: lastDecision?.confidence || null }, null, 2));
-      } else if (command === 'quality' || command === 'cost') {
+          last_pick: lastDecision?.pick?.id || saved?.model || null, confidence: lastDecision?.confidence || null }, null, 2));
+      } else if (command === 'quality') {
         const n = Number(value);
         if (!Number.isInteger(n) || n < 1 || n > 5) throw new Error('Use an integer from 1 to 5');
-        config[command] = n; notice(ctx, `${command}=${n}; applies to new subagents and future conversation selections.`);
+        config.quality = n; notice(ctx, `Quality ${n}/5; applies to new subagents and future conversation selections.`);
+      } else if (command === 'cost') {
+        const n = value === 'off' ? null : value === undefined || value.trim() === '' ? NaN : Number(value);
+        if (n !== null && (!Number.isFinite(n) || n < 0)) throw new Error('Use cost <nonnegative USD per million tokens> or cost off');
+        config.maxCostPerMillionTokens = n;
+        notice(ctx, n === null ? 'Cost ceiling disabled.' : `Cost ceiling $${n} per 1M total tokens (50% input + 50% output). Applies to new subagents and future conversation selections; this is not a per-task spending cap.`);
       } else if (command === 'capture') {
         if (!['on', 'off'].includes(value)) throw new Error('Use capture on or capture off');
         config.capture = value === 'on'; notice(ctx, `Training capture ${value}. When on, exact router inputs (including task and AA evidence) and teacher rankings are stored locally.`);
