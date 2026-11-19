@@ -484,3 +484,13 @@ decisions:
   evidence: Approval of the release numbering proposal for docs/PLAN.md and .agent/rules.yml on 2026-11-18.
   originating_task: Adopt version numbering for Goldilocks releases
   explicit_user_feedback: true
+
+- id: DECISION-039
+  status: APPROVED
+  selection: "Convert the codebse to typescript fully"
+  topic: Implementation language
+  decision: Use TypeScript for the Goldilocks runtime, Pi extension, configuration, scripts and tests.
+  source: USER_DECISION
+  evidence: README.md, package.json and tsconfig.json.
+  originating_task: Full TypeScript migration
+  explicit_user_feedback: true

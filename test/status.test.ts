@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { executionUsage, modelPricing } from '../src/status.mjs';
-const response = (provider, cost, usage = {}) => ({ type: 'message', message: { role: 'assistant', provider,
+import { executionUsage, modelPricing } from '../src/status.ts';
+const response = (provider: string, cost: number, usage = {}) => ({ type: 'message', message: { role: 'assistant', provider,
   usage: { input: 1000, output: 100, cacheRead: 200, cacheWrite: 0, cost: { total: cost }, ...usage } } });
 
 test('cost status sums recorded Token Factory usage, excluding the router and unrelated entries', () => {

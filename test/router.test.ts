@@ -1,13 +1,14 @@
-import test from 'node:test';
+import type { CatalogModel, TeacherInput } from '../src/types.ts';
+import test, { type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
-import { chatCandidates, eligibleCandidates, buildPayload, parseRanking, rankWithTeacher, NoSelection, chooseEvidence } from '../src/router.mjs';
-import { isAAUrl, isFresh, atomicJSON, extractAA, readJSON, refreshCatalog } from '../src/evidence.mjs';
-import { routeTask } from '../src/service.mjs';
+import { chatCandidates, eligibleCandidates, buildPayload, parseRanking, rankWithTeacher, NoSelection, chooseEvidence } from '../src/router.ts';
+import { isAAUrl, isFresh, atomicJSON, extractAA, readJSON, refreshCatalog } from '../src/evidence.ts';
+import { routeTask } from '../src/service.ts';
 import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const model = (id, extra = {}) => ({ id, architecture: { modality: 'text->text' }, context_length: 64000,
+const model = (id: string, extra: Partial<CatalogModel> = {}) => ({ id, architecture: { modality: 'text->text' }, context_length: 64000,
   supported_features: ['tools'], pricing: { prompt: '0.000001', completion: '0.000002' }, ...extra });
 const catalog = { fetched_at: new Date().toISOString(), models: [model('cheap'), model('vision', { architecture: { modality: 'text+image->text' }, context_length: 128000 })] };
 const page = { url: 'https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index', content: 'Benchmark observations '.repeat(20), fetched_at: new Date().toISOString(), sha256: 'a' };
@@ -15,7 +16,7 @@ const evidence = { fetched_at: new Date().toISOString(), pages: [page] };
 const payload = () => buildPayload({ task: 'Review code', catalog, evidence });
 const answer = '{"ranked_candidate_ids":["cheap","vision"],"reasons":["adequate","stronger"]}';
 
-async function temp(t) {
+async function temp(t: TestContext) {
   const dir = await mkdtemp(join(tmpdir(), 'goldilocks-'));
   t.after(() => rm(dir, { recursive: true, force: true })); return dir;
 }
@@ -56,13 +57,13 @@ test('untrusted teacher ranking cannot introduce IDs, duplicates or omit require
   assert.equal(result.pick.cost_in_per_1m, 1);
 });
 test('bounded repair uses the exact same context and no tool definitions', async () => {
-  const calls = [];
+  const calls: TeacherInput[] = [];
   const result = await rankWithTeacher(payload(), async input => {
     calls.push(input); return calls.length === 1 ? 'not JSON' : answer;
   });
   assert.equal(calls.length, 2);
   assert.equal(calls[0].prompt, calls[1].prompt);
-  assert.equal(calls[0].tools, undefined);
+  assert.equal('tools' in calls[0], false);
   assert.equal(result.pick.id, 'cheap');
 });
 test('cancelled routing does not invoke the teacher', async () => {
@@ -106,7 +107,7 @@ test('partial Extract response never replaces the last valid snapshot', async t 
   await atomicJSON(join(dir,'aa-urls.json'), { urls: [page.url, 'https://artificialanalysis.ai/evaluations/scicode'] });
   const original = globalThis.fetch, oldKey = process.env.TAVILY_API_KEY;
   process.env.TAVILY_API_KEY = 'test';
-  globalThis.fetch = async () => ({ ok: true, json: async () => ({ results: [{ url: page.url, raw_content: page.content }], failed_results: [{ url: 'https://artificialanalysis.ai/evaluations/scicode' }] }) });
+  globalThis.fetch = async () => Response.json({ results: [{ url: page.url, raw_content: page.content }], failed_results: [{ url: 'https://artificialanalysis.ai/evaluations/scicode' }] });
   t.after(() => { globalThis.fetch = original; if (oldKey === undefined) delete process.env.TAVILY_API_KEY; else process.env.TAVILY_API_KEY = oldKey; });
   await assert.rejects(extractAA(dir, { force: true }), /incomplete/);
   assert.deepEqual(await readJSON(join(dir,'aa-pages.json')), evidence);
@@ -125,7 +126,7 @@ test('concurrent catalogue refreshes share a filesystem cache rather than issuin
   const dir = await temp(t); let requests = 0;
   const original = globalThis.fetch, key = process.env.NEBIUS_API_KEY;
   process.env.NEBIUS_API_KEY = 'test';
-  globalThis.fetch = async () => { requests++; await new Promise(resolve => setTimeout(resolve, 25)); return { ok: true, json: async () => ({ data: catalog.models }) }; };
+  globalThis.fetch = async () => { requests++; await new Promise(resolve => setTimeout(resolve, 25)); return Response.json({ data: catalog.models }); };
   t.after(() => { globalThis.fetch = original; if (key === undefined) delete process.env.NEBIUS_API_KEY; else process.env.NEBIUS_API_KEY = key; });
   const [a,b] = await Promise.all([refreshCatalog(dir), refreshCatalog(dir)]);
   assert.equal(requests, 1);
@@ -168,7 +169,7 @@ test('dollar ceiling uses an explicit 50/50 rate and filters before the teacher 
 });
 test('cost ceiling accepts null and zero but rejects invalid dollar amounts', () => {
   for (const value of [-1, NaN, Infinity, '0.50', false]) {
-    assert.throws(() => buildPayload({ task: 'task', catalog, evidence, preferences: { maxCostPerMillionTokens: value } }), /USD amount/);
+    assert.throws(() => buildPayload({ task: 'task', catalog, evidence, preferences: { maxCostPerMillionTokens: value as number } }), /USD amount/);
   }
   assert.equal(payload().requirements.maxCostPerMillionTokens, null);
   assert.equal(payload().candidates.length, 2);

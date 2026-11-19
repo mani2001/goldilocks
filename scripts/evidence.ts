@@ -1,4 +1,5 @@
-import { CACHE_DIR, refreshCatalog, discoverAA, discoverIndexLinks, extractAA, readJSON } from '../src/evidence.mjs';
+import type { Catalog, Evidence } from '../src/types.ts';
+import { CACHE_DIR, refreshCatalog, discoverAA, discoverIndexLinks, extractAA, readJSON } from '../src/evidence.ts';
 import { join } from 'node:path';
 const command = process.argv[2] || 'status';
 try {
@@ -16,7 +17,7 @@ try {
     const aa = await extractAA(CACHE_DIR, { force: process.argv.includes('--force') });
     console.log(JSON.stringify({ models: catalog.models.length, pages: aa.pages.length, fetched_at: aa.fetched_at }));
   } else if (command === 'status') {
-    const c = await readJSON(join(CACHE_DIR, 'catalog.json')), a = await readJSON(join(CACHE_DIR, 'aa-pages.json'));
+    const c = await readJSON<Catalog>(join(CACHE_DIR, 'catalog.json')), a = await readJSON<Evidence>(join(CACHE_DIR, 'aa-pages.json'));
     console.log(JSON.stringify({ models: c?.models?.length || 0, pages: a?.pages?.length || 0, aa_fetched_at: a?.fetched_at || null, cache: CACHE_DIR }));
   } else throw new Error('Use catalog, discover [--force], refresh [--force], or status');
-} catch (e) { console.error(e.message); process.exitCode = 1; }
+} catch (e) { console.error(e instanceof Error ? e.message : String(e)); process.exitCode = 1; }

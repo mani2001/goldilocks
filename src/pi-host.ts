@@ -19,4 +19,4 @@ export function piPackageDir() {
   }
   throw new Error('Install Pi first, or set PI_PACKAGE_DIR to its package directory');
 }
-export async function importPi() { return import(pathToFileURL(join(piPackageDir(), 'dist/index.js')).href); }
+export async function importPi(): Promise<typeof import('@earendil-works/pi-coding-agent')> { return import(pathToFileURL(join(piPackageDir(), 'dist/index.js')).href); }

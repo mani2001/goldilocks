@@ -1,4 +1,4 @@
-import { importPi } from '../src/pi-host.mjs';
+import { importPi } from '../src/pi-host.ts';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -30,7 +30,7 @@ try {
     response: session.getLastAssistantText(), routing_attempts: session.sessionManager.getBranch().filter(e => e.type === 'custom' && e.customType === 'goldilocks-selection').length }));
   if (session.model?.provider !== 'tokenfactory') throw new Error('Conversation did not switch to Token Factory');
   if (delegation) {
-    const delegated = session.messages.filter(m => m.role === 'toolResult' && m.toolName === 'goldilocks_subagent').at(-1);
+    const delegated = session.messages.filter(m => m.role === 'toolResult').findLast(m => m.toolName === 'goldilocks_subagent');
     console.log(JSON.stringify({ phase: 'natural_delegation', called: !!delegated, isError: delegated?.isError ?? null }));
     if (!delegated || delegated.isError) throw new Error('Execution model did not successfully invoke the subagent tool');
   }
