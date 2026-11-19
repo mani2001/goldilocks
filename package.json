@@ -1,0 +1,15 @@
+{
+  "name": "goldilocks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test",
+    "evidence": "node --env-file-if-exists=.env scripts/evidence.mjs",
+    "doctor": "node --env-file-if-exists=.env scripts/doctor.mjs",
+    "smoke": "node --env-file-if-exists=.env scripts/smoke.mjs --subagent",
+    "start": "node --env-file-if-exists=.env scripts/pi.mjs"
+  },
+  "pi": { "extensions": ["./extensions/goldilocks.ts"], "skills": ["./skills"] }
+}
