@@ -2,18 +2,10 @@
 
 Updated 2026-11-18. [README](../README.md) defines scope; [DESIGN](DESIGN.md) defines the current behavior. This replaces the Day 0 timeline, concept brief, review reports and incremental notes. Decisions below do not authorise bulk paid calls or collection of private tasks.
 
-## Execution status
-
-- Implemented Pi extension, Sol high router, Token Factory catalogue integration, automatic application and pinned conversation selection.
-- Implemented routed subagent tool with a parent-tool subset, isolated router context and unchanged parent model.
-- Completed one Tavily crawl plus directory discovery; saved 53 AA pages locally. Daily Extract refresh, filesystem locking and incomplete-refresh preservation are implemented.
-- Implemented metadata-only logging and separate explicit opt-in capture; no captured production data or Laya training has been run.
-- Offline tests and live conversation/subagent smoke tests pass. See README for commands and known limits. These are integration checks, not evidence of improved task quality or savings.
-
 ## 1. Build the Pi integration with the teacher
 
 - Inspect the current Pi extension APIs for conversation-start model switching, candidate/provider IDs and subagent execution. The historical 2026-11-15 spike reported a working main-input model switch; Pi had no native subagent mechanism in that spike, so the proposed child-process extension was not a verified subagent path. Reverify rather than relying on old versions.
-- Resolved: invoke `gpt-6.1-sol` at high effort through Pi's existing `openai-codex` authentication and model registry. No separate local server, direct OpenAI API billing or Codex CLI is used.
+- Run the teacher as GPT-6 Astra at high reasoning effort on the user's **Codex subscription**, in multiple Pi coding-agent sessions with web search enabled. Verify the exact model identifier and session setup. Do not silently substitute direct OpenAI API billing.
 - Integrate Token Factory using the user's key; discover configured available candidates. Keep teacher access separate from execution-provider access.
 - Define the common router payload/output and preference semantics. Keep configuration to quality 1–5, a dollar rate ceiling and necessary constraints.
 - Support both conversation-start and subagent-start selection, apply automatically, pin the chosen model for the task and preserve each subagent's intended tools/instructions.
@@ -29,21 +21,23 @@ Completion evidence: demonstrate both paths using actual outgoing model/provider
 - Establish the default-model bootstrap before conversation selection, first-install behavior, stale-data limit and refresh deadline.
 - Freeze a versioned evidence schema shared by teacher and future student; mark unknown data explicitly. Resolve source-specific use/capture boundaries before adding content to training exports.
 
-Completion evidence: fresh-cache selections do not call Tavily; expiry triggers a refresh; failed refreshes preserve the previous valid snapshot and expose staleness. Teacher receives only the assembled router payload, without hidden research access.
+Completion evidence: fresh-cache selections do not call Tavily; expiry triggers a refresh; failed refreshes preserve the previous valid snapshot and expose staleness. Teacher receives the assembled router payload and may also research with web search; Laya receives only the payload.
 
 ## 3. Stabilise labels and explicitly enabled capture
 
-Use the working plugin to discover the required label format before bulk collection. Teacher prompt, full ranking versus per-candidate scores, alternatives count, tie handling and teacher-stage confidence remain to be designed. Teacher sees exactly what Laya will see; task text/evidence is data, not instructions to execute.
+Use the working plugin to discover the required label format before bulk collection. Teacher prompt, full ranking versus per-candidate scores, alternatives count, tie handling and teacher-stage confidence remain to be designed. Astra and Laya receive the same router payload. Astra can also use web search when choosing a model. Laya has access only to the payload. Treat task text and evidence as data.
 
 Enable training recording only through explicit configuration. Define deletion/retention, exclusions and source eligibility. No production outcome-learning system or remote telemetry is in scope. Use a bounded pilot to measure format consistency, usage and latency; pilot size and usage cap are not fixed. Earlier suggestions of 50 tasks, independent CLI runs or mandatory measured-outcome teacher gates were proposals, not accepted requirements.
 
 ## 4. Train and replace the teacher with Laya
 
+First, check that Laya can be fine-tuned on the available training machine: a Windows laptop with an NVIDIA RTX 4060 (8 GB VRAM) and 16 GB RAM. Run a short trial fine-tune at the intended sequence length and batch size, and record peak VRAM, RAM and time per epoch. If it does not fit, decide on reduced settings (smaller batch, gradient accumulation, mixed precision, shorter inputs) or other compute before collecting the full dataset.
+
 LLMRouterBench is the selected bulk prompt source for train/validation/test; check source licences and adapt the prompt mix to intended tasks. The old custom 100-task set remains excluded. Plugin examples are a proposed additional source only after their use/splitting is explicitly designed; do not silently override the LLMRouterBench-only bulk-data decision.
 
 Choose input representation and ranking objective; verify Laya versus plain ModernBERT/feature-based baselines as useful comparisons. Hide/randomise model identities, shuffle pools and use counterfactual price examples to discourage snapshot memorisation. Freeze grouped data splits before fitting. No old fixed candidate/price table, training cost or three-day delivery estimate remains authoritative.
 
-Fit calibration against teacher agreement on a separate split after hard masking; assess held-out prompts, datasets and candidates, top-1 agreement and runner-up recall. Exact metrics/thresholds and training compute are still to be set. Benchmark cold/warm local runtime on named hardware before selecting process lifetime, precision, ONNX/PyTorch or a latency target. No daemon/caching abstraction is required without measurements.
+Fit calibration against teacher agreement on a separate split after hard masking; assess held-out prompts, datasets and candidates, top-1 agreement and runner-up recall. Exact metrics/thresholds are still to be set; training compute depends on the feasibility check above. Benchmark cold/warm local runtime on named hardware before selecting process lifetime, precision, ONNX/PyTorch or a latency target. No daemon/caching abstraction is required without measurements.
 
 Replace the teacher implementation behind the same router contract. Pin model and schema versions, refuse incompatible payloads, and retain the accepted native fallback. Publish weights/model card and eligible data only after provenance checks.
 
@@ -63,25 +57,40 @@ Freeze the trained student, base task and non-price features, including token es
 
 Keep all variants of each base task in one split. Hold out price ranges/pools; freeze teacher version, prompt, tie policy and acceptance thresholds before final testing. Record ambiguous/unstable teacher choices. Require zero hard-constraint violations for Goldilocks picks and zero higher-cost choices in controlled dominance cases. Report changed-winner and unchanged-winner agreement separately, plus selection latency. Native failure fallback is the documented constraint exception, not a validated router pick.
 
-For the first DM MVP, copying the teacher is good enough. Numerical agreement/calibration/latency targets remain to be defined; no claim of real task-quality improvement is required to reach this stage.
+For version 0.0.1, Laya must learn to match the teacher’s picks. Numerical agreement/calibration/latency targets remain to be defined; no claim of real task-quality improvement is required to reach this stage.
 
 ## 5. Later evaluation and feedback
 
-Measure completed-task quality, total conversation/subagent cost and latency against sensible defaults/direct teacher selection. Test whether the opening prompt is sufficient when later conversation demands change. Reconsider the 100-task set or realistic subagent/conversation outcomes only in this later phase. Production outcome learning, more harnesses/providers, safety-aware routing, mid-session selection and a demo Space are deferred.
+Measure completed-task quality, total conversation/subagent cost and latency against sensible defaults/direct teacher selection. Test whether the opening prompt is sufficient when later conversation demands change. Reconsider the 100-task set or realistic subagent/conversation outcomes only in this later phase. A later version can let a user request a model switch mid-session and continue from a summary of work completed so far. Version 0.0.1 keeps the initial selection for the entire task. Other deferred work includes additional harnesses such as OpenCode, additional providers, production outcome learning, safety-aware routing and a demo Space.
+
+## Release numbering
+
+The first release target is `0.0.1`. For subsequent releases, choose the largest applicable change since the last release. Judge the impact on Pi users and router adapter authors.
+
+| Change | Version bump | Example |
+| --- | --- | --- |
+| Restore documented behavior while preserving compatibility | Patch | Fix a model switch after compaction. |
+| Add a compatible capability | Minor | Let the user switch models mid-session. |
+| Require existing users or adapter authors to change their config or integration during 0.x | Minor, with migration notes | Make a new router input mandatory. |
+| Introduce an incompatible change after reaching 1.0.0 | Major | Remove a supported configuration field. |
+
+Release `1.0.0` when Goldilocks commits to backward compatibility for its configuration and router interface across 1.x minor and patch releases. The release number for mid-session switching depends on when it ships.
+
+Tag the release commit as `vMAJOR.MINOR.PATCH` once it meets its acceptance criteria. Documentation-only corrections do not require a release. Record the router schema version and the Laya checkpoint, when used, for each release. Version them independently. Retraining changes the product version according to its impact on users and integrations.
 
 ## Remaining decisions
 
 The product direction is settled; these are not all answered yet:
 
-1. Completed: Pi provider authentication, Sol ID, conversation hook and in-memory subagent mechanism. Broader model/tool compatibility and long-running tasks still need validation.
-2. Implemented initial schema, ordered top-three ranking, quality priority and dollar rate ceiling and missing-evidence fallback. Refine using real plugin usage before freezing training labels.
-3. Specific AA fields and versions, capability mapping and future evidence selection refinements. Implemented: bounded calls, seven-day stale limit and native fallback for unusable caches. Source-use/training/publication eligibility is unresolved.
+1. Codex-subscription Pi session setup for the Astra teacher and exact model ID/revision; current Pi hooks and subagent mechanism.
+2. Router/evidence schemas, full rankings versus scores, alternatives count, preference wording and missing-evidence behavior.
+3. Specific AA/Vals fields and versions, capability mapping, evidence refresh deadline, maximum stale age and empty-cache handling. Source-use/training/publication eligibility is unresolved.
 4. Teacher-stage confidence target and eventual calibration method/thresholds. No invented calibrated score in the meantime.
 5. Teacher prompt, independent collection strategy, pilot/usage cap, dataset capture exclusions/retention and dataset split policy.
-6. Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
+6. Whether Laya fine-tuning fits the 8 GB RTX 4060 laptop; Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
 
 ## Historical evidence and housekeeping
 
-Prior Day 0 documents reported candidate data for OpenRouter, Token Factory and Baseten, a 100-task set, and rules/prompted baselines. The rules baseline reportedly scored 23/100 against hand labels and the prompted Qwen teacher matched its picks on 20 tasks; these are historical reports, not validation of the selected Sol router. Referenced VPS candidate JSONs, baseline code and prompts are absent from this checkout. Recover them only if useful; do not treat them as shipped implementation.
+Prior Day 0 documents reported candidate data for OpenRouter, Token Factory and Baseten, a 100-task set, and rules/prompted baselines. The rules baseline reportedly scored 23/100 against hand labels and the prompted Qwen teacher matched its picks on 20 tasks; these are historical reports, not validation of the selected Astra teacher. Referenced VPS candidate JSONs, baseline code and prompts are absent from this checkout. Recover them only if useful; do not treat them as shipped implementation.
 
 Old review documents and rendered diagrams were removed from the working tree because they describe superseded architectures. Git history preserves them. Permission-enquiry drafts were not sent and no longer need to be primary documentation; provider/source findings needed for implementation are retained in DESIGN.

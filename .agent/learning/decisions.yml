@@ -1,0 +1,486 @@
+---
+schema_version: 1
+decisions:
+- id: DECISION-001
+  status: APPROVED
+  amended_by: DECISION-037
+  selection: Recorded in README.md
+  topic: Product scope
+  decision: >-
+    Goldilocks selects the model for a conversation or subagent task from the opening instructions, the
+    available models and the preferences. It applies the pick automatically and keeps that model for the rest
+    of the conversation or task, including later turns, tool calls and compaction.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-002
+  status: APPROVED
+  selection: Recorded in README.md
+  topic: First harness
+  decision: Pi is the first harness, supporting both conversation starts and subagent starts.
+  source: USER_DECISION
+  evidence: README.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-003
+  status: APPROVED
+  selection: Recorded in README.md
+  topic: Build order
+  decision: >-
+    Build inside out. Make the plugin work with the teacher as its router first, then replace the teacher with
+    a local decision model behind the same router contract.
+  source: USER_DECISION
+  evidence: README.md and docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-004
+  status: SUPERSEDED
+  superseded_by: DECISION-029
+  selection: Recorded in README.md
+  topic: Teacher model
+  decision: >-
+    GPT-6.1 Sol through a local Codex API at high reasoning effort. Do not silently substitute direct OpenAI API
+    billing or Codex CLI. Superseded by DECISION-029.
+  source: USER_DECISION
+  evidence: README.md and docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-005
+  status: SUPERSEDED
+  superseded_by: DECISION-030
+  selection: Recorded in README.md
+  topic: Teacher and student input
+  decision: >-
+    The teacher and Laya receive exactly the same router payload: no extra teacher browsing, repository access,
+    hidden history or tools. Superseded by DECISION-030.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-006
+  status: APPROVED
+  selection: Recorded in README.md
+  topic: Execution provider
+  decision: >-
+    Execution models come from Nebius Token Factory, using the configured API key and available catalogue.
+    Teacher access stays separate from execution-provider access.
+  source: USER_DECISION
+  evidence: README.md and docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-007
+  status: APPROVED
+  selection: Recorded in README.md
+  topic: Decision model
+  decision: >-
+    The decision model is a fine-tuned Laya (convaiinnovations/laya-typed-decisions), an encoder that ranks
+    candidates rather than generating answers.
+  source: USER_DECISION
+  evidence: README.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-008
+  status: APPROVED
+  selection: Recorded in README.md
+  topic: Preferences
+  decision: >-
+    Preferences are only quality and cost, each rated 1 to 5. Keep configuration small; no broad configuration
+    framework. Proposed convention, wording still to be confirmed: higher quality means more emphasis on
+    capability; higher cost means more emphasis on saving money.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-009
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Hard constraints
+  decision: >-
+    Picks and alternatives must satisfy hard constraints (availability, context length, modality). Code validates
+    candidate identifiers and constraints; the router does not.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-010
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Router output
+  decision: >-
+    Output a pick, ordered alternatives, confidence with an accurate calibration status, provider, input/output
+    token prices with currency and unit, and latency where known. Unknown measurements stay unknown. Provider,
+    price and latency come from the evidence, not from the router.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-011
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Evidence gathering
+  decision: >-
+    The execution or parent model follows a skill to gather Artificial Analysis and Vals evidence through Tavily:
+    Search to find sources, Extract for known pages. Provider catalogue and prices come from Token Factory's
+    official sources.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-012
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Evidence cache
+  decision: >-
+    One local cache shared by conversations and subagents. Default TTL 24 hours, configurable. Plugin code checks
+    freshness. Coalesce concurrent refreshes, validate before replacing atomically, keep the last good snapshot on
+    failure and show its age. No public GitHub benchmark mirror and no scheduled central CI data feed.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-013
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Conversation bootstrap and subagents
+  decision: >-
+    At conversation start a default model may gather evidence before selection; ordinary task answering starts on
+    the selected model. For subagents the parent gathers evidence before spawning. Never silently switch a running
+    subagent's model.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-014
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Untrusted fetched content
+  decision: >-
+    Fetched page content is untrusted evidence. Keep it out of executable instructions and validate the structured
+    values. Do not send private task text in benchmark-discovery queries.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-015
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Router failure fallback
+  decision: >-
+    If the router is unavailable, times out or errors, continue visibly on the native Pi default as-is and log the
+    fallback. Goldilocks does not validate that default against its constraints.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-016
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Empty eligible pool
+  decision: >-
+    An empty eligible pool returns no selection and reports the blocking constraints. Do not invoke the native
+    fallback.
+  source: USER_DECISION
+  evidence: README.md and docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-017
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Malformed router output
+  decision: >-
+    One repair attempt within the same deadline, then the native fallback. Never apply an unvalidated pick.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-018
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Router timeout
+  decision: >-
+    Configurable 60-second router timeout, including the repair attempt; validate against real teacher latency.
+    Evidence refresh has its own bounded deadline.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-019
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Metadata logging
+  decision: >-
+    Every attempt and fallback writes local metadata logs. No raw prompts, instructions, outputs or transcripts.
+    No remote telemetry.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-020
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Training capture
+  decision: >-
+    Training capture is explicit opt-in only. Record the exact router input plus teacher output, not whole sessions.
+    Never commit private task data or API keys.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md and docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-021
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Confidence target
+  decision: >-
+    Laya's confidence means the probability of agreeing with the teacher, not of task success. Calibrate after hard
+    filtering on held-out data. Do not invent a calibrated score for the teacher.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-022
+  status: APPROVED
+  selection: Recorded in docs/PLAN.md
+  topic: Training data source
+  decision: >-
+    LLMRouterBench is the bulk prompt source for train, validation and test, subject to licence checks. The old
+    custom 100-task set is excluded. Plugin examples are added only after their use is explicitly designed.
+  source: USER_DECISION
+  evidence: docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-023
+  status: APPROVED
+  selection: Recorded in docs/PLAN.md
+  topic: Preventing memorisation
+  decision: >-
+    Hide or randomise model identities, shuffle candidate pools and use counterfactual price examples. Freeze
+    grouped data splits before fitting.
+  source: USER_DECISION
+  evidence: docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-024
+  status: APPROVED
+  selection: Recorded in docs/PLAN.md
+  topic: Price-variation validation
+  decision: >-
+    Required. Vary prices with the task fixed and compare Laya and a code-based scorer against fresh teacher
+    choices. Zero hard-constraint violations, and zero strictly-higher-cost picks in dominance cases.
+  source: USER_DECISION
+  evidence: docs/PLAN.md section 4 at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-025
+  status: APPROVED
+  amended_by: DECISION-036
+  selection: Recorded in README.md
+  topic: MVP acceptance
+  decision: >-
+    For the first decision-model MVP, copying the teacher is sufficient. No claim of real task-quality improvement
+    is required. The numerical agreement threshold is still to be set.
+  source: USER_DECISION
+  evidence: README.md and docs/PLAN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-026
+  status: APPROVED
+  amended_by: DECISION-037
+  selection: Recorded in docs/PLAN.md
+  topic: Deferred scope
+  decision: >-
+    Deferred to later phases: completed-task quality evaluation, production outcome learning, more harnesses and
+    providers, safety-aware routing, mid-session selection and a demo Space.
+  source: USER_DECISION
+  evidence: docs/PLAN.md section 5 at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-027
+  status: SUPERSEDED
+  superseded_by: DECISION-032
+  selection: Recorded in README.md
+  topic: Source of truth
+  decision: >-
+    README.md, docs/DESIGN.md and docs/PLAN.md are the only source of truth. Older plans, reviews and diagrams
+    are kept in git history only. Superseded by DECISION-032.
+  source: USER_DECISION
+  evidence: README.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-028
+  status: APPROVED
+  selection: Recorded in docs/DESIGN.md
+  topic: Source rights stance
+  decision: >-
+    Keep source URLs, dates and attribution. Do not publish cached tables or automatically include unchecked
+    third-party evidence in training exports. Permission for AA and Vals use remains unresolved.
+  source: USER_DECISION
+  evidence: docs/DESIGN.md at commit f4fcdad.
+  originating_task: 2026-11-16 Pi MVP planning consolidation
+  explicit_user_feedback: false
+
+- id: DECISION-029
+  status: APPROVED
+  amended_by: DECISION-033
+  selection: >-
+    "this is with my codex subscription using gpt 6 astra by opening multiple pi coding agent sessions and allowing
+    it web search access so that it can do reserach"
+  topic: Teacher model (supersedes DECISION-004)
+  decision: >-
+    The teacher is GPT-6 Astra on a Codex subscription, run in multiple Pi coding-agent sessions with web search
+    enabled so it can research candidates before picking. Do not silently substitute direct OpenAI API billing.
+    Exact model identifier and session setup are still to be verified. Reasoning effort is set by DECISION-033.
+  source: USER_DECISION
+  evidence: README.md, docs/DESIGN.md and docs/PLAN.md edited on 2026-11-17.
+  originating_task: 2026-11-17 teacher and training-hardware revision
+  explicit_user_feedback: true
+
+- id: DECISION-030
+  status: APPROVED
+  selection: Update all the docs
+  topic: Teacher and student input (supersedes DECISION-005)
+  decision: >-
+    The teacher receives the router payload and may also research with web search; Laya receives only the payload.
+    Known risk: Laya learns to copy picks that may rest on facts it does not see.
+  source: USER_DECISION
+  evidence: >-
+    Asked whether to rewrite the same-input rule in all three docs, keep it, or log the teacher's research into the
+    payload; the user chose to update all the docs. Edited on 2026-11-17.
+  originating_task: 2026-11-17 teacher and training-hardware revision
+  explicit_user_feedback: true
+
+- id: DECISION-031
+  status: APPROVED
+  selection: >-
+    "add taht we need to first examine if we can fine tune the model on user's available windows laptop with 8gb of
+    vram and 16 gb of ram and nviida rtx 4060"
+  topic: Training hardware feasibility check
+  decision: >-
+    Before collecting the full dataset, trial-fine-tune Laya on a Windows laptop with an NVIDIA RTX 4060 (8 GB VRAM)
+    and 16 GB RAM at the intended sequence length and batch size; record peak VRAM, RAM and time per epoch. If it
+    does not fit, choose reduced settings or other compute first.
+  source: USER_DECISION
+  evidence: docs/PLAN.md section 4 and open question 6 edited on 2026-11-17.
+  originating_task: 2026-11-17 teacher and training-hardware revision
+  explicit_user_feedback: true
+
+- id: DECISION-032
+  status: APPROVED
+  selection: "update readme, create a claude.md and symlink to agetns.md"
+  topic: Source of truth and agent instructions (supersedes DECISION-027)
+  decision: >-
+    The source of truth is README.md, docs/DESIGN.md, docs/PLAN.md and this decisions ledger; a newer ledger entry
+    supersedes the older one it names. AGENTS.md holds agent instructions (preferred skills asd-ste100 and
+    c4-architecture, when to record decisions, git workflow), and CLAUDE.md is a symlink to it. Never push directly to
+    main; every change goes through a pull request using .github/pull_request_template.md, with Conventional Commits.
+  source: USER_DECISION
+  evidence: README.md, AGENTS.md, CLAUDE.md and .github/pull_request_template.md created or edited on 2026-11-17.
+  originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
+
+- id: DECISION-033
+  status: APPROVED
+  selection: "reasining effort for asta is high"
+  topic: Teacher reasoning effort (amends DECISION-029)
+  decision: The GPT-6 Astra teacher runs at high reasoning effort.
+  source: USER_DECISION
+  evidence: README.md, docs/DESIGN.md and docs/PLAN.md edited on 2026-11-17.
+  originating_task: 2026-11-17 teacher and training-hardware revision
+  explicit_user_feedback: true
+
+- id: DECISION-034
+  status: APPROVED
+  selection: "add the l;earing loop as well to this pr"
+  topic: Learning loop
+  decision: >-
+    Adopt a candidates, decisions and rules learning loop. After meaningful tasks agents propose rules as CANDIDATE-NNN in
+    .agent/learning/candidates.yml; the user approves or rejects them; approvals are recorded as decisions and the
+    resulting rules live in .agent/rules.yml, each citing its decision. Seed the registry with the working rules
+    from DECISION-032.
+  source: USER_DECISION
+  evidence: .agent/learning/candidates.yml, .agent/rules.yml and AGENTS.md created or edited on 2026-11-17.
+  originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
+
+- id: DECISION-035
+  status: APPROVED
+  selection: "why arent the current decisions such as d4 ? show that they are superseded ?"
+  topic: Marking superseded and amended decisions
+  decision: >-
+    A replaced decision gets status SUPERSEDED and a superseded_by field naming the new decision. A partly changed
+    decision keeps status APPROVED and gets an amended_by field. Entries are never deleted or renumbered. This
+    extends the original ledger schema, which only used status APPROVED.
+  source: USER_DECISION
+  evidence: DECISION-004, 005 and 027 marked SUPERSEDED and DECISION-029 marked amended_by on 2026-11-17.
+  originating_task: 2026-11-17 agent instructions and PR workflow
+  explicit_user_feedback: true
+
+- id: DECISION-036
+  status: APPROVED
+  amended_by: DECISION-038
+  selection: >-
+    "and can we stop calling it mvp ?" / "and start versioning it instead" / "Version 0.0.1" /
+    "I will come up with some versioning rules"
+  topic: First release name (amends DECISION-025)
+  decision: >-
+    Refer to the first planned release as version 0.0.1. The criteria for assigning later version numbers are open.
+  source: USER_DECISION
+  evidence: Release discussion supplied with the 2026-11-18 plan correction. See README.md, docs/DESIGN.md and docs/PLAN.md.
+  originating_task: 2026-11-18 release scope and plan correction
+  explicit_user_feedback: true
+
+- id: DECISION-037
+  status: APPROVED
+  selection: >-
+    "takes in a summary of what has been done so far and then continues ?" / "Yesds" /
+    "should this be in the mvp ?" / "No"
+  topic: User-requested mid-session switch after 0.0.1 (amends DECISION-001 and DECISION-026)
+  decision: >-
+    Version 0.0.1 pins the execution model for the task. A later version can support a user-requested model
+    switch during a session and pass a summary of completed work to the incoming model so it can continue.
+  source: USER_DECISION
+  evidence: Release discussion supplied with the 2026-11-18 plan correction. See README.md and docs/PLAN.md.
+  originating_task: 2026-11-18 release scope and plan correction
+  explicit_user_feedback: true
+
+- id: DECISION-038
+  status: APPROVED
+  selection: "ok go for it"
+  topic: Product release numbering (amends DECISION-036)
+  decision: >-
+    Use the largest applicable bump. Compatible fixes take a patch and compatible features take a minor.
+    Breaking changes during 0.x take a minor with migration notes. Start 1.0.0 when config and router
+    interfaces carry a backward compatibility commitment. Breaking changes then take a major.
+    Tag release commits after acceptance. Documentation-only fixes need no release.
+    Track the schema and checkpoint separately and judge product bumps by user or integration impact.
+  source: USER_DECISION
+  evidence: Approval of the release numbering proposal for docs/PLAN.md and .agent/rules.yml on 2026-11-18.
+  originating_task: Adopt version numbering for Goldilocks releases
+  explicit_user_feedback: true

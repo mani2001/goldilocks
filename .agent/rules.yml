@@ -1,0 +1,100 @@
+---
+schema_version: 1
+rules:
+- id: AGENT-001
+  title: Work through pull requests
+  strength: MUST
+  scope: All changes to this repository
+  rule: >-
+    Never push directly to main. Work on a branch and open a pull request that uses
+    .github/pull_request_template.md.
+  rationale: Every change to the plan or code gets reviewed by the other collaborator.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-032"
+  enforcement:
+    status: review-only
+    mechanism: Review. GitHub branch protection on main is not yet enabled.
+    limitations: Nothing stops a direct push until branch protection is on.
+  documentation: AGENTS.md
+
+- id: AGENT-002
+  title: Use Conventional Commits
+  strength: MUST
+  scope: Commit messages and pull request titles
+  rule: Write commit messages and pull request titles as type(scope) summary, following Conventional Commits.
+  rationale: Consistent, scannable history.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-032"
+  enforcement:
+    status: review-only
+    mechanism: Review.
+    limitations: No commit-message linter is installed.
+  documentation: AGENTS.md
+
+- id: AGENT-003
+  title: Record approved decisions in the ledger
+  strength: MUST
+  scope: Scope, design, plan, tool or model choices and working rules
+  rule: >-
+    When the user explicitly states or approves such a change, add the next DECISION-NNN to
+    .agent/learning/decisions.yml. It is in force at once; no candidate is needed. If it is a working rule, also add
+    it to .agent/rules.yml citing the decision. If it changes what README.md, docs/DESIGN.md or docs/PLAN.md say,
+    update them in the same change. Mark replaced decisions SUPERSEDED with superseded_by, and partly changed ones
+    with amended_by. Resolving a candidate (AGENT-004) also uses this rule.
+  rationale: Keeps one traceable history of what was decided and why.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-032"
+  enforcement:
+    status: review-only
+    mechanism: Review of the PR Decisions section.
+    limitations: Cannot detect an approval that was never recorded.
+  documentation: AGENTS.md
+
+- id: AGENT-004
+  title: Agent-inferred rules go through candidates
+  strength: MUST
+  scope: Rules an agent infers that the user has not stated
+  rule: >-
+    After a meaningful task, review it for a lesson the user has not stated as a rule: a correction to a specific
+    output, a breakage, a repeated mistake, or a code smell. If found, add CANDIDATE-NNN to
+    .agent/learning/candidates.yml with status NEEDS_DECISION, proposed_rule (the rule as it would read), evidence
+    (a nonempty list of what happened), reason (why the rule helps), affected_files, originating_task, confidence
+    (HIGH, MEDIUM or LOW), suggested_enforcement (a check, test, lint or review), explicit_user_feedback (true if it
+    comes from something the user said) and conflicts (rule ids it contradicts, or an empty list). Tell the user and
+    do not follow it as a rule yet. When the user decides, record a decision under AGENT-003, then set the candidate
+    status (ADOPT, ADAPT, REJECT or NOT_APPLICABLE) and decision_id. If the user states the rule directly, skip the
+    candidate and use AGENT-003. Routine work, one-off preferences and open plan questions are not candidates.
+  rationale: Prevents agent preference or repetition from becoming policy.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-034"
+  enforcement:
+    status: review-only
+    mechanism: Review that every rule cites an APPROVED decision.
+    limitations: None automated.
+  documentation: AGENTS.md
+
+- id: AGENT-005
+  title: Select and tag product releases
+  strength: MUST
+  scope: Preparing a Goldilocks release
+  rule: >-
+    Apply the release numbering table in docs/PLAN.md to all changes since the previous release.
+    Use the largest applicable bump and include migration notes for breaking changes during 0.x.
+    Record the schema version and applicable checkpoint separately. Create the release tag after acceptance.
+  rationale: Users and adapter authors can tell what an upgrade requires.
+  source:
+    type: USER_DECISION
+    references:
+    - ".agent/learning/decisions.yml#DECISION-038"
+  enforcement:
+    status: review-only
+    mechanism: Compare the proposed release number and tag against the changes and acceptance evidence.
+  documentation: docs/PLAN.md#release-numbering
