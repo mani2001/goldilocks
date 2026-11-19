@@ -1,11 +1,19 @@
 # Goldilocks delivery plan
 
-Updated 2026-11-16. [README](../README.md) defines scope; [DESIGN](DESIGN.md) defines the current behavior. This replaces the Day 0 timeline, concept brief, review reports and incremental notes. Decisions below do not authorise bulk paid calls or collection of private tasks.
+Updated 2026-11-18. [README](../README.md) defines scope; [DESIGN](DESIGN.md) defines the current behavior. This replaces the Day 0 timeline, concept brief, review reports and incremental notes. Decisions below do not authorise bulk paid calls or collection of private tasks.
+
+## Execution status
+
+- Implemented Pi extension, Sol high router, Token Factory catalogue integration, automatic application and pinned conversation selection.
+- Implemented routed subagent tool with a parent-tool subset, isolated router context and unchanged parent model.
+- Completed one Tavily crawl plus directory discovery; saved 53 AA pages locally. Daily Extract refresh, filesystem locking and incomplete-refresh preservation are implemented.
+- Implemented metadata-only logging and separate explicit opt-in capture; no captured production data or Laya training has been run.
+- Offline tests and live conversation/subagent smoke tests pass. See README for commands and known limits. These are integration checks, not evidence of improved task quality or savings.
 
 ## 1. Build the Pi integration with the teacher
 
 - Inspect the current Pi extension APIs for conversation-start model switching, candidate/provider IDs and subagent execution. The historical 2026-11-15 spike reported a working main-input model switch; Pi had no native subagent mechanism in that spike, so the proposed child-process extension was not a verified subagent path. Reverify rather than relying on old versions.
-- Identify the user's **local Codex API** endpoint/protocol/authentication and executable Sol identifier. Use GPT-6.1 Sol at high effort. Do not silently substitute direct OpenAI API billing or Codex CLI.
+- Resolved: invoke `gpt-6.1-sol` at high effort through Pi's existing `openai-codex` authentication and model registry. No separate local server, direct OpenAI API billing or Codex CLI is used.
 - Integrate Token Factory using the user's key; discover configured available candidates. Keep teacher access separate from execution-provider access.
 - Define the common router payload/output and preference semantics. Keep configuration to quality/cost 1–5 and necessary constraints.
 - Support both conversation-start and subagent-start selection, apply automatically, pin the chosen model for the task and preserve each subagent's intended tools/instructions.
@@ -15,7 +23,7 @@ Completion evidence: demonstrate both paths using actual outgoing model/provider
 
 ## 2. Integrate evidence gathering and caching
 
-- Build the skill's Tavily queries and AA/Vals source list, then verify completeness on real pages and exact Token Factory model configurations.
+- Build the skill's Tavily queries and AA-only source list, then verify completeness on real pages and exact Token Factory model configurations.
 - Gather official provider catalogue/prices; keep benchmark scores and endpoint performance provenance separate.
 - Implement the shared local cache with a 24-hour default TTL, validation and atomic replacement. Prevent duplicate concurrent refreshes.
 - Establish the default-model bootstrap before conversation selection, first-install behavior, stale-data limit and refresh deadline.
@@ -65,9 +73,9 @@ Measure completed-task quality, total conversation/subagent cost and latency aga
 
 The product direction is settled; these are not all answered yet:
 
-1. Local Codex connection and exact model ID/revision; current Pi hooks and subagent mechanism.
-2. Router/evidence schemas, full rankings versus scores, alternatives count, preference wording and missing-evidence behavior.
-3. Specific AA/Vals fields and versions, capability mapping, evidence refresh deadline, maximum stale age and empty-cache handling. Source-use/training/publication eligibility is unresolved.
+1. Completed: Pi provider authentication, Sol ID, conversation hook and in-memory subagent mechanism. Broader model/tool compatibility and long-running tasks still need validation.
+2. Implemented initial schema, ordered top-three ranking, quality/cost preferences and missing-evidence fallback. Refine using real plugin usage before freezing training labels.
+3. Specific AA fields and versions, capability mapping and future evidence selection refinements. Implemented: bounded calls, seven-day stale limit and native fallback for unusable caches. Source-use/training/publication eligibility is unresolved.
 4. Teacher-stage confidence target and eventual calibration method/thresholds. No invented calibrated score in the meantime.
 5. Teacher prompt, independent collection strategy, pilot/usage cap, dataset capture exclusions/retention and dataset split policy.
 6. Laya representation, context-length policy, training/runtime packaging, version rollback and numerical acceptance thresholds.
