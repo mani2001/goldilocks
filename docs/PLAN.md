@@ -7,7 +7,7 @@ Updated 2026-11-18. [README](../README.md) defines scope; [DESIGN](DESIGN.md) de
 - Inspect the current Pi extension APIs for conversation-start model switching, candidate/provider IDs and subagent execution. The historical 2026-11-15 spike reported a working main-input model switch; Pi had no native subagent mechanism in that spike, so the proposed child-process extension was not a verified subagent path. Reverify rather than relying on old versions.
 - Run the teacher as GPT-6 Astra at high reasoning effort on the user's **Codex subscription**, in multiple Pi coding-agent sessions with web search enabled. Verify the exact model identifier and session setup. Do not silently substitute direct OpenAI API billing.
 - Integrate Token Factory using the user's key; discover configured available candidates. Keep teacher access separate from execution-provider access.
-- Define the common router payload/output and preference semantics. Keep configuration to quality/cost 1–5 and necessary constraints.
+- Define the common router payload/output and preference semantics. Keep configuration to quality 1–5, a dollar rate ceiling and necessary constraints.
 - Support both conversation-start and subagent-start selection, apply automatically, pin the chosen model for the task and preserve each subagent's intended tools/instructions.
 - Implement validation, bounded timeouts, native fallback and metadata logging.
 
@@ -15,7 +15,7 @@ Completion evidence: demonstrate both paths using actual outgoing model/provider
 
 ## 2. Integrate evidence gathering and caching
 
-- Build the skill's Tavily queries and AA/Vals source list, then verify completeness on real pages and exact Token Factory model configurations.
+- Build the skill's Tavily queries and AA-only source list, then verify completeness on real pages and exact Token Factory model configurations.
 - Gather official provider catalogue/prices; keep benchmark scores and endpoint performance provenance separate.
 - Implement the shared local cache with a 24-hour default TTL, validation and atomic replacement. Prevent duplicate concurrent refreshes.
 - Establish the default-model bootstrap before conversation selection, first-install behavior, stale-data limit and refresh deadline.
