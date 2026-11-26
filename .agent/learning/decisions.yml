@@ -494,3 +494,22 @@ decisions:
   evidence: README.md, package.json and tsconfig.json.
   originating_task: Full TypeScript migration
   explicit_user_feedback: true
+
+- id: DECISION-040
+  status: APPROVED
+  selection: >-
+    "5 phases - add this to plan: 1) data cleaning - what input should go to the model, for prompts with
+    repostiries since we can't have whole repo as input we need to decide what major components of the
+    repo go in. 2)generating labels for laya using the cleaned data. 3) training laya 4) eval laya
+    5) adding the trained router to the plugin" / "6) miscellonous"
+  topic: Version 0.0.1 delivery phases
+  decision: >-
+    Plan the Laya rollout in six phases: data cleaning and model inputs, label generation from the cleaned
+    data, Laya training, Laya evaluation, integration of the trained router into the Pi plugin, and
+    miscellaneous work. During data cleaning, decide which repository components to include in the routing
+    input instead of passing the whole repository. The component selection and the scope of miscellaneous
+    work remain open.
+  source: USER_DECISION
+  evidence: docs/PLAN.md and docs/DESIGN.md.
+  originating_task: Define the version 0.0.1 Laya rollout phases
+  explicit_user_feedback: true
